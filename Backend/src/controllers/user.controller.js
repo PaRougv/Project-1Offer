@@ -13,9 +13,9 @@ const generateToken = (userId) => {
 export const register = async (req, res) => {
     try {
 
-        const { name, email, password, role } = req.body;
+        const { name, email, password, role, department } = req.body;
 
-        if (!name || !email || !password) {
+        if (!name || !email || !password || !department) {
             return res.status(400).json({
                 message: "All fields are required"
             });
@@ -36,7 +36,8 @@ export const register = async (req, res) => {
             name,
             email,
             password: hashedPassword,
-            role
+            role,
+            department
         });
 
         const token = generateToken(user._id);
@@ -55,7 +56,8 @@ export const register = async (req, res) => {
                 _id: user._id,
                 name: user.name,
                 email: user.email,
-                role: user.role
+                role: user.role,
+                department: user.department
             }
         });
 

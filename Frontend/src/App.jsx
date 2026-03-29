@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { Routes, Route } from 'react-router-dom'
+import LoginPage from './pages/Login.jsx'
 
 
 function App() {
   return (
     <div>
       <Routes>
-        <Route path='/login' element={<h1>Login</h1>} />
+        <Route path='/login' element={<LoginPage  />} />
       </Routes>
     </div>
   )
