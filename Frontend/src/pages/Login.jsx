@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../styles/Login.css";
 
 const Login = () => {
+    const navigate = useNavigate()
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -10,6 +12,7 @@ const Login = () => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [user , setUser] = useState(null)
 
   const handleChange = (e) => {
     setFormData({
@@ -32,14 +35,20 @@ const Login = () => {
         }
       );
 
-      console.log("Login Success:", response.data);
+      console.log("Login Success:", response.data.user);
 
-      // Example: Save user
-      localStorage.setItem("user", JSON.stringify(response.data));
+      const role = response.data.user.role;
 
-      // Redirect (optional)
-      // window.location.href = "/dashboard";
-
+      if (role === "HOD") {
+        navigate("/dashboard");
+      } 
+      else if (role === "ADMIN") {
+        navigate("/admin");
+      } 
+      else {
+        navigate("/login");
+      }
+      
     } catch (err) {
       console.error(err);
       setError(
