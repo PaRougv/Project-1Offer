@@ -184,3 +184,10 @@ export const update = async (req, res) => {
         });
     }
 };
+
+export const verify = async () => {
+    res.json({
+        success: true,
+        user: req.user
+  });
+}

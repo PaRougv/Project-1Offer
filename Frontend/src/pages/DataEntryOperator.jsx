@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-// ── Inline styles / design tokens ──────────────────────────────────────────
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500&display=swap');
 
@@ -31,7 +31,6 @@ const css = `
     padding: 0;
   }
 
-  /* ── Header ── */
   .deo-header {
     background: var(--surface);
     border-bottom: 2px solid var(--accent);
@@ -70,13 +69,11 @@ const css = `
     text-transform: uppercase;
   }
 
-  /* ── Layout ── */
   .deo-body {
     display: flex;
     min-height: calc(100vh - 78px);
   }
 
-  /* ── Sidebar tabs ── */
   .deo-sidebar {
     width: 200px;
     background: var(--surface);
@@ -103,7 +100,6 @@ const css = `
     color: var(--muted);
     border-left: 3px solid transparent;
     transition: all 0.15s ease;
-    position: relative;
   }
   .deo-tab-btn:hover {
     color: var(--text);
@@ -120,7 +116,6 @@ const css = `
     text-align: center;
   }
 
-  /* ── Content area ── */
   .deo-content {
     flex: 1;
     padding: 40px;
@@ -154,7 +149,6 @@ const css = `
     text-transform: uppercase;
   }
 
-  /* ── Cards / field groups ── */
   .deo-card {
     background: var(--panel);
     border: 1px solid var(--border);
@@ -179,7 +173,6 @@ const css = `
     background: var(--accent);
   }
 
-  /* ── Field grid ── */
   .deo-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   .deo-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
 
@@ -216,21 +209,6 @@ const css = `
     box-shadow: 0 0 0 2px rgba(232,197,71,0.12);
   }
 
-  /* ── Top issues row ── */
-  .deo-issue-row {
-    display: grid;
-    grid-template-columns: 1fr 120px;
-    gap: 12px;
-  }
-  .deo-issue-idx {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 11px;
-    color: var(--muted);
-    padding-top: 30px;
-    letter-spacing: 1px;
-  }
-
-  /* ── Submit button ── */
   .deo-submit-row {
     margin-top: 28px;
     display: flex;
@@ -261,28 +239,63 @@ const css = `
     letter-spacing: 0.5px;
   }
 
-  /* ── Divider ── */
   .deo-divider {
     height: 1px;
     background: var(--border);
     margin: 20px 0;
   }
+
+  .deo-logout-btn {
+    margin-left: 12px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--danger);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    letter-spacing: 2px;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .deo-logout-btn:hover {
+    background: var(--danger);
+    color: white;
+    border-color: var(--danger);
+  }
 `;
 
-// ── Icons (inline SVG as strings for cleanliness) ───────────────────────────
 const TabIcon = ({ tab }) => {
-  const icons = {
-    safety:   "🛡",
-    quality:  "◈",
-    delivery: "⬡",
-    cost:     "◎",
-  };
+  const icons = { safety: "🛡", quality: "◈", delivery: "⬡", cost: "◎" };
   return <span className="deo-tab-icon">{icons[tab]}</span>;
 };
 
-// ── Main Component ───────────────────────────────────────────────────────────
+// ✅ KEY FIX: Field is defined OUTSIDE the component so it's never recreated on re-render
+const Field = ({ label, name, placeholder, value, onChange }) => (
+  <div className="deo-field">
+    <label className="deo-label">{label}</label>
+    <input
+      type="number"
+      name={name}
+      value={value}
+      placeholder={placeholder || "—"}
+      className="deo-input"
+      onChange={onChange}
+    />
+  </div>
+);
+
+const SubmitRow = ({ tab, onSubmit }) => (
+  <div className="deo-submit-row">
+    <button className="deo-submit-btn" onClick={() => onSubmit(tab)}>
+      ↑ Submit {tab}
+    </button>
+    <span className="deo-submit-hint">Posts to /api/{tab}</span>
+  </div>
+);
+
 const DataEntryOperator = () => {
   const [activeTab, setActiveTab] = useState("safety");
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     safety: { nearmiss: "", incidents: "", fac: "" },
@@ -307,13 +320,29 @@ const DataEntryOperator = () => {
 
   const handleChange = (tab, e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [tab]: { ...formData[tab], [name]: value } });
+    setFormData((prev) => ({
+      ...prev,
+      [tab]: { ...prev[tab], [name]: value },
+    }));
+  };
+
+  const handleLogout = async () => {
+    try {
+      await axios.post("http://localhost:5000/api/auth/logout", {}, { withCredentials: true });
+      navigate("/login");
+    } catch (error) {
+      console.error(error);
+      alert("Logout failed");
+    }
   };
 
   const handleQualityTopIssues = (index, field, value) => {
-    const updated = [...formData.quality.topIssues];
-    updated[index][field] = value;
-    setFormData({ ...formData, quality: { ...formData.quality, topIssues: updated } });
+    setFormData((prev) => {
+      const updated = prev.quality.topIssues.map((issue, i) =>
+        i === index ? { ...issue, [field]: value } : issue
+      );
+      return { ...prev, quality: { ...prev.quality, topIssues: updated } };
+    });
   };
 
   const handleSubmit = async (tab) => {
@@ -322,8 +351,8 @@ const DataEntryOperator = () => {
       let payload = formData[tab];
 
       switch (tab) {
-        case "safety":   url = "http://localhost:5000/api/safety";   break;
-        case "quality":  url = "http://localhost:5000/api/quality";  break;
+        case "safety":  url = "http://localhost:5000/api/safety";  break;
+        case "quality": url = "http://localhost:5000/api/quality"; break;
         case "delivery":
           url = "http://localhost:5000/api/delivery";
           payload = {
@@ -338,7 +367,6 @@ const DataEntryOperator = () => {
             biwproduction:  Number(formData.delivery.biwproduction || 0),
             tcfproduction:  Number(formData.delivery.tcfproduction || 0),
           };
-          console.log("Delivery Payload:", payload);
           break;
         case "cost": url = "http://localhost:5000/api/cost"; break;
         default: break;
@@ -352,29 +380,6 @@ const DataEntryOperator = () => {
     }
   };
 
-  // ── Sub-render helpers ────────────────────────────────────────────────────
-  const Field = ({ label, name, tab, placeholder }) => (
-    <div className="deo-field">
-      <label className="deo-label">{label}</label>
-      <input
-        type="number"
-        name={name}
-        placeholder={placeholder || "—"}
-        className="deo-input"
-        onChange={(e) => handleChange(tab, e)}
-      />
-    </div>
-  );
-
-  const SubmitRow = ({ tab }) => (
-    <div className="deo-submit-row">
-      <button className="deo-submit-btn" onClick={() => handleSubmit(tab)}>
-        ↑ Submit {tab}
-      </button>
-      <span className="deo-submit-hint">Posts to /api/{tab}</span>
-    </div>
-  );
-
   const tabMeta = {
     safety:   { label: "Safety",   num: "01" },
     quality:  { label: "Quality",  num: "02" },
@@ -387,16 +392,15 @@ const DataEntryOperator = () => {
       <style>{css}</style>
       <div className="deo-root">
 
-        {/* Header */}
         <header className="deo-header">
           <div className="deo-header-icon">⬡</div>
           <h1 className="deo-title">Paint<span>shop</span> OPS</h1>
           <span className="deo-badge">Data Entry Operator</span>
+          <button className="deo-logout-btn" onClick={handleLogout}>Logout</button>
         </header>
 
         <div className="deo-body">
 
-          {/* Sidebar */}
           <aside className="deo-sidebar">
             {["safety", "quality", "delivery", "cost"].map((tab) => (
               <button
@@ -410,7 +414,6 @@ const DataEntryOperator = () => {
             ))}
           </aside>
 
-          {/* Content */}
           <main className="deo-content">
 
             <div className="deo-section-header">
@@ -419,29 +422,27 @@ const DataEntryOperator = () => {
               <span className="deo-section-num">Section {tabMeta[activeTab].num}</span>
             </div>
 
-            {/* ── SAFETY ── */}
             {activeTab === "safety" && (
               <>
                 <div className="deo-card">
                   <div className="deo-card-title">Incident Metrics</div>
                   <div className="deo-grid-3">
-                    <Field label="Near Miss" name="nearmiss" tab="safety" />
-                    <Field label="Incidents" name="incidents" tab="safety" />
-                    <Field label="FAC" name="fac" tab="safety" />
+                    <Field label="Near Miss" name="nearmiss" value={formData.safety.nearmiss} onChange={(e) => handleChange("safety", e)} />
+                    <Field label="Incidents" name="incidents" value={formData.safety.incidents} onChange={(e) => handleChange("safety", e)} />
+                    <Field label="FAC"       name="fac"       value={formData.safety.fac}       onChange={(e) => handleChange("safety", e)} />
                   </div>
                 </div>
-                <SubmitRow tab="safety" />
+                <SubmitRow tab="safety" onSubmit={handleSubmit} />
               </>
             )}
 
-            {/* ── QUALITY ── */}
             {activeTab === "quality" && (
               <>
                 <div className="deo-card">
                   <div className="deo-card-title">Quality Scores</div>
                   <div className="deo-grid-2">
-                    <Field label="HS" name="hs" tab="quality" />
-                    <Field label="Punch" name="punch" tab="quality" />
+                    <Field label="HS"    name="hs"    value={formData.quality.hs}    onChange={(e) => handleChange("quality", e)} />
+                    <Field label="Punch" name="punch" value={formData.quality.punch} onChange={(e) => handleChange("quality", e)} />
                   </div>
                 </div>
 
@@ -463,6 +464,7 @@ const DataEntryOperator = () => {
                             type="text"
                             placeholder="Issue description"
                             className="deo-input"
+                            value={issue.description}
                             onChange={(e) => handleQualityTopIssues(index, "description", e.target.value)}
                           />
                         </div>
@@ -472,6 +474,7 @@ const DataEntryOperator = () => {
                             type="number"
                             placeholder="—"
                             className="deo-input"
+                            value={issue.number}
                             onChange={(e) => handleQualityTopIssues(index, "number", e.target.value)}
                           />
                         </div>
@@ -479,58 +482,56 @@ const DataEntryOperator = () => {
                     ))}
                   </div>
                 </div>
-                <SubmitRow tab="quality" />
+                <SubmitRow tab="quality" onSubmit={handleSubmit} />
               </>
             )}
 
-            {/* ── DELIVERY ── */}
             {activeTab === "delivery" && (
               <>
                 <div className="deo-card">
                   <div className="deo-card-title">Paintshop In</div>
                   <div className="deo-grid-3">
-                    <Field label="A Shift In" name="ashiftin" tab="delivery" />
-                    <Field label="B Shift In" name="bshiftin" tab="delivery" />
-                    <Field label="C Shift In" name="cshiftin" tab="delivery" />
+                    <Field label="A Shift In" name="ashiftin" value={formData.delivery.ashiftin} onChange={(e) => handleChange("delivery", e)} />
+                    <Field label="B Shift In" name="bshiftin" value={formData.delivery.bshiftin} onChange={(e) => handleChange("delivery", e)} />
+                    <Field label="C Shift In" name="cshiftin" value={formData.delivery.cshiftin} onChange={(e) => handleChange("delivery", e)} />
                   </div>
                 </div>
 
                 <div className="deo-card">
                   <div className="deo-card-title">Paintshop Out</div>
                   <div className="deo-grid-3">
-                    <Field label="A Shift Out" name="ashiftout" tab="delivery" />
-                    <Field label="B Shift Out" name="bshiftout" tab="delivery" />
-                    <Field label="C Shift Out" name="cshiftout" tab="delivery" />
+                    <Field label="A Shift Out" name="ashiftout" value={formData.delivery.ashiftout} onChange={(e) => handleChange("delivery", e)} />
+                    <Field label="B Shift Out" name="bshiftout" value={formData.delivery.bshiftout} onChange={(e) => handleChange("delivery", e)} />
+                    <Field label="C Shift Out" name="cshiftout" value={formData.delivery.cshiftout} onChange={(e) => handleChange("delivery", e)} />
                   </div>
                 </div>
 
                 <div className="deo-card">
                   <div className="deo-card-title">Production</div>
                   <div className="deo-grid-2">
-                    <Field label="Topcoat Cycles"  name="topcoatcycles"  tab="delivery" />
-                    <Field label="Surfacer Cycles"  name="surfacercycles" tab="delivery" />
-                    <Field label="BIW Production"   name="biwproduction"  tab="delivery" />
-                    <Field label="TCF Production"   name="tcfproduction"  tab="delivery" />
+                    <Field label="Topcoat Cycles"  name="topcoatcycles"  value={formData.delivery.topcoatcycles}  onChange={(e) => handleChange("delivery", e)} />
+                    <Field label="Surfacer Cycles"  name="surfacercycles" value={formData.delivery.surfacercycles} onChange={(e) => handleChange("delivery", e)} />
+                    <Field label="BIW Production"   name="biwproduction"  value={formData.delivery.biwproduction}  onChange={(e) => handleChange("delivery", e)} />
+                    <Field label="TCF Production"   name="tcfproduction"  value={formData.delivery.tcfproduction}  onChange={(e) => handleChange("delivery", e)} />
                   </div>
                 </div>
-                <SubmitRow tab="delivery" />
+                <SubmitRow tab="delivery" onSubmit={handleSubmit} />
               </>
             )}
 
-            {/* ── COST ── */}
             {activeTab === "cost" && (
               <>
                 <div className="deo-card">
                   <div className="deo-card-title">Consumption & Overheads</div>
                   <div className="deo-grid-2">
-                    <Field label="Power Consumption"   name="powerConsumption"   tab="cost" />
-                    <Field label="Gas Consumption"     name="gasConsumption"     tab="cost" />
-                    <Field label="IDM Consumption"     name="idmConsumption"     tab="cost" />
-                    <Field label="Thinner Consumption" name="thinnerConsumption" tab="cost" />
-                    <Field label="OT Nos"              name="otNos"              tab="cost" />
+                    <Field label="Power Consumption"   name="powerConsumption"   value={formData.cost.powerConsumption}   onChange={(e) => handleChange("cost", e)} />
+                    <Field label="Gas Consumption"     name="gasConsumption"     value={formData.cost.gasConsumption}     onChange={(e) => handleChange("cost", e)} />
+                    <Field label="IDM Consumption"     name="idmConsumption"     value={formData.cost.idmConsumption}     onChange={(e) => handleChange("cost", e)} />
+                    <Field label="Thinner Consumption" name="thinnerConsumption" value={formData.cost.thinnerConsumption} onChange={(e) => handleChange("cost", e)} />
+                    <Field label="OT Nos"              name="otNos"              value={formData.cost.otNos}              onChange={(e) => handleChange("cost", e)} />
                   </div>
                 </div>
-                <SubmitRow tab="cost" />
+                <SubmitRow tab="cost" onSubmit={handleSubmit} />
               </>
             )}
 

@@ -21,6 +21,8 @@ const qualitySchema = new mongoose.Schema({
         },
       },
     ],
+} , {
+  timestamps: true
 })
 
 const Quality = mongoose.model('Quality' , qualitySchema)

@@ -54,18 +54,12 @@ export const getDashboardData = async (req, res) => {
       createdAt: { $gte: startDate }
     });
 
-    const department = await Department.find({
-      createdAt: { $gte: startDate }
-    });
-
-
 
     res.status(200).json({
       safety,
       quality,
       delivery,
       cost,
-      department
     });
 
   } catch (error) {
