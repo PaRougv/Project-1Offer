@@ -3,6 +3,7 @@ import Quality from "../models/quality.model.js";
 export const createQuality = async (req, res) => {
   try {
     const { hs, punch, topIssues } = req.body;
+    
 
     const quality = new Quality({
       hs,
@@ -11,6 +12,7 @@ export const createQuality = async (req, res) => {
     });
 
     const savedQuality = await quality.save();
+
 
     res.status(201).json({
       success: true,

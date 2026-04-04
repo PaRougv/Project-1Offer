@@ -1,38 +1,30 @@
 import mongoose from "mongoose";
 
 const deliverySchema = new mongoose.Schema({
-    paintshopin: [
-        {
-            ashift: {
-                type: Number,
-                required: true
-            },
-            bshift: {
-                type: Number,
-                required: true
-            },
-            cshift: {
-                type: Number,
-                required: true
-            }
-        }
-    ],
-    paintshopout: [
-        {
-            ashift: {
-                type: Number,
-                required: true
-            },
-            bshift: {
-                type: Number,
-                required: true
-            },
-            cshift: {
-                type: Number,
-                required: true
-            }
-        }
-    ],
+    ashiftin: {
+        type: Number,
+        required: true
+    },
+    bshiftin: {
+        type: Number,
+        required: true
+    },
+    cshiftin: {
+        type: Number,
+        required: true
+    },
+    ashiftout: {
+        type: Number,
+        required: true
+    },
+    bshiftout: {
+        type: Number,
+        required: true
+    },
+    cshiftout: {
+        type: Number,
+        required: true
+    },
     topcoatcycles: {
         type: Number,
         required: true
@@ -50,6 +42,8 @@ const deliverySchema = new mongoose.Schema({
         required: true
     }
 
+} , {
+    timestamps: true   // ← ADD THIS
 })
 
 const Delivery = mongoose.model('Delivery' , deliverySchema)

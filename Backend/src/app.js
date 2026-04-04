@@ -7,7 +7,8 @@ import departmentRoutes from './routes/department.routes.js';
 import costRoutes from './routes/cost.routes.js';
 import safetyRoutes from './routes/safety.routes.js';
 import qualityRoutes from './routes/quality.routes.js'
-import deliveryRoutes from './routes/department.routes.js'
+import deliveryRoutes from './routes/delivery.routes.js'
+import fetchRoutes from './routes/fetch.routes.js'
 dotenv.config();
 
 const app = express();
@@ -25,6 +26,7 @@ app.use('/api/safety' , safetyRoutes)
 app.use('/api/quality' , qualityRoutes)
 app.use('/api/delivery' , deliveryRoutes)
 app.use('/api/cost' , costRoutes)
+app.use("/api", fetchRoutes);
 
 
 export default app;

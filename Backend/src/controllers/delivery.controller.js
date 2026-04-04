@@ -4,37 +4,24 @@ import Delivery from "../models/delivery.model.js";
 // CREATE
 export const createDelivery = async (req, res) => {
   try {
-    const {
-      paintshopin,
-      paintshopout,
-      topcoatcycles,
-      surfacercycles,
-      biwproduction,
-      tcfproduction
-    } = req.body;
 
-    const delivery = new Delivery({
-      paintshopin,
-      paintshopout,
-      topcoatcycles,
-      surfacercycles,
-      biwproduction,
-      tcfproduction
-    });
+    console.log("Incoming Body:", req.body);
 
-    const savedDelivery = await delivery.save();
+    const delivery = await Delivery.create(req.body);
 
     res.status(201).json({
       success: true,
-      message: "Delivery data created successfully",
-      data: savedDelivery
+      data: delivery
     });
 
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error creating delivery data",
-      error: error.message
+
+    console.log("FULL ERROR ↓↓↓↓↓↓↓↓↓↓↓↓");
+    console.log(error);
+
+    res.status(400).json({
+      message: error.message,
+      error
     });
   }
 };
