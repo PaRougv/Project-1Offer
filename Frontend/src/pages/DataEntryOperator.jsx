@@ -1,24 +1,25 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 // ── Inline styles / design tokens ──────────────────────────────────────────
 const css = `
-  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg:        #0d0f12;
-    --surface:   #13171d;
-    --panel:     #1a1f28;
-    --border:    #272d38;
-    --accent:    #e8c547;
-    --accent2:   #4a9eff;
-    --danger:    #ff5252;
-    --success:   #2ecc71;
-    --text:      #d4dae6;
-    --muted:     #5a6478;
-    --label:     #8b95a8;
+    --bg:        #f4f6f8;
+    --surface:   #ffffff;
+    --panel:     #ffffff;
+    --border:    #dfe5eb;
+    --accent:    #b7791f;
+    --accent2:   #2563eb;
+    --danger:    #b91c1c;
+    --success:   #15803d;
+    --text:      #1e293b;
+    --muted:     #64748b;
+    --label:     #475569;
   }
 
   body { background: var(--bg); }
@@ -26,7 +27,7 @@ const css = `
   .deo-root {
     min-height: 100vh;
     background: var(--bg);
-    font-family: 'Barlow', sans-serif;
+    font-family: 'DM Sans', sans-serif;
     color: var(--text);
     padding: 0;
   }
@@ -34,8 +35,8 @@ const css = `
   /* ── Header ── */
   .deo-header {
     background: var(--surface);
-    border-bottom: 2px solid var(--accent);
-    padding: 20px 40px;
+    border-bottom: 1px solid var(--border);
+    padding: 16px 40px;
     display: flex;
     align-items: center;
     gap: 16px;
@@ -45,29 +46,47 @@ const css = `
   }
   .deo-header-icon {
     width: 36px; height: 36px;
-    background: var(--accent);
+    background: #1e293b;
+    color: #ffffff;
     display: grid; place-items: center;
     font-size: 18px;
     flex-shrink: 0;
   }
   .deo-title {
-    font-family: 'Barlow Condensed', sans-serif;
+    font-family: 'DM Sans', sans-serif;
     font-weight: 800;
     font-size: 22px;
-    letter-spacing: 3px;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: #fff;
+    color: #1e293b;
   }
   .deo-title span { color: var(--accent); }
   .deo-badge {
     margin-left: auto;
-    font-family: 'Barlow Condensed', sans-serif;
+    font-family: 'DM Sans', sans-serif;
     font-size: 11px;
-    letter-spacing: 2px;
+    letter-spacing: 0.04em;
     color: var(--muted);
     border: 1px solid var(--border);
     padding: 4px 10px;
     text-transform: uppercase;
+  }
+  .deo-logout-btn {
+    all: unset;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    padding: 8px 12px;
+    text-transform: uppercase;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .deo-logout-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
   }
 
   /* ── Layout ── */
@@ -95,10 +114,10 @@ const css = `
     align-items: center;
     gap: 12px;
     padding: 14px 24px;
-    font-family: 'Barlow Condensed', sans-serif;
+    font-family: 'DM Sans', sans-serif;
     font-size: 14px;
     font-weight: 700;
-    letter-spacing: 2px;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
     color: var(--muted);
     border-left: 3px solid transparent;
@@ -134,17 +153,17 @@ const css = `
     margin-bottom: 32px;
   }
   .deo-section-title {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 32px;
-    font-weight: 800;
-    letter-spacing: 4px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
     text-transform: uppercase;
-    color: #fff;
+    color: #1e293b;
   }
   .deo-section-line {
     flex: 1;
     height: 1px;
-    background: linear-gradient(to right, var(--border), transparent);
+    background: var(--border);
   }
   .deo-section-num {
     font-family: 'Barlow Condensed', sans-serif;
@@ -158,14 +177,16 @@ const css = `
   .deo-card {
     background: var(--panel);
     border: 1px solid var(--border);
-    padding: 24px;
-    margin-bottom: 16px;
+    border-radius: 6px;
+    padding: 22px;
+    margin-bottom: 14px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
   }
   .deo-card-title {
-    font-family: 'Barlow Condensed', sans-serif;
+    font-family: 'DM Sans', sans-serif;
     font-size: 11px;
     font-weight: 700;
-    letter-spacing: 3px;
+    letter-spacing: 0.07em;
     text-transform: uppercase;
     color: var(--accent);
     margin-bottom: 18px;
@@ -196,10 +217,10 @@ const css = `
     color: var(--label);
   }
   .deo-input {
-    background: var(--bg);
+    background: #f8fafc;
     border: 1px solid var(--border);
-    color: var(--text);
-    font-family: 'Barlow', sans-serif;
+    color: #1e293b;
+    font-family: 'DM Sans', sans-serif;
     font-size: 15px;
     font-weight: 400;
     padding: 10px 14px;
@@ -240,9 +261,9 @@ const css = `
   .deo-submit-btn {
     all: unset;
     cursor: pointer;
-    background: var(--accent);
-    color: #0d0f12;
-    font-family: 'Barlow Condensed', sans-serif;
+    background: #1e293b;
+    color: #ffffff;
+    font-family: 'DM Sans', sans-serif;
     font-weight: 800;
     font-size: 13px;
     letter-spacing: 3px;
@@ -253,7 +274,7 @@ const css = `
     gap: 10px;
     transition: background 0.15s, transform 0.1s;
   }
-  .deo-submit-btn:hover { background: #f5d45a; }
+  .deo-submit-btn:hover { background: #334155; }
   .deo-submit-btn:active { transform: scale(0.98); }
   .deo-submit-hint {
     font-size: 11px;
@@ -266,6 +287,23 @@ const css = `
     height: 1px;
     background: var(--border);
     margin: 20px 0;
+  }
+  @media (max-width: 720px) {
+    .deo-header { padding: 14px 18px; gap: 10px; }
+    .deo-title { font-size: 18px; }
+    .deo-badge { display: none; }
+    .deo-logout-btn { margin-left: auto; }
+    .deo-body { display: block; }
+    .deo-sidebar {
+      width: 100%; padding: 8px 12px; border-right: 0;
+      border-bottom: 1px solid var(--border); flex-direction: row; overflow-x: auto;
+    }
+    .deo-tab-btn { padding: 10px 12px; border-left: 0; border-bottom: 2px solid transparent; white-space: nowrap; }
+    .deo-tab-btn.active { border-left-color: transparent; border-bottom-color: var(--accent); }
+    .deo-content { padding: 24px 16px; max-width: none; }
+    .deo-section-title { font-size: 24px; }
+    .deo-grid-2, .deo-grid-3 { grid-template-columns: 1fr; }
+    .deo-submit-row { align-items: flex-start; flex-direction: column; gap: 8px; }
   }
 `;
 
@@ -280,9 +318,42 @@ const TabIcon = ({ tab }) => {
   return <span className="deo-tab-icon">{icons[tab]}</span>;
 };
 
+const Field = ({ label, name, tab, placeholder, onChange }) => (
+  <div className="deo-field">
+    <label className="deo-label">{label}</label>
+    <input
+      type="number"
+      name={name}
+      placeholder={placeholder || "—"}
+      className="deo-input"
+      onChange={(e) => onChange(tab, e)}
+    />
+  </div>
+);
+
+const SubmitRow = ({ tab, onSubmit }) => (
+  <div className="deo-submit-row">
+    <button className="deo-submit-btn" onClick={() => onSubmit(tab)}>
+      ↑ Submit {tab}
+    </button>
+    <span className="deo-submit-hint">Posts to /api/{tab}</span>
+  </div>
+);
+
 // ── Main Component ───────────────────────────────────────────────────────────
 const DataEntryOperator = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("safety");
+
+  const handleLogout = async () => {
+    try {
+      await axios.post("http://localhost:5000/api/auth/logout", {}, { withCredentials: true });
+    } catch (error) {
+      console.error("Logout failed", error);
+    } finally {
+      navigate("/login");
+    }
+  };
 
   const [formData, setFormData] = useState({
     safety: { nearmiss: "", incidents: "", fac: "" },
@@ -352,29 +423,6 @@ const DataEntryOperator = () => {
     }
   };
 
-  // ── Sub-render helpers ────────────────────────────────────────────────────
-  const Field = ({ label, name, tab, placeholder }) => (
-    <div className="deo-field">
-      <label className="deo-label">{label}</label>
-      <input
-        type="number"
-        name={name}
-        placeholder={placeholder || "—"}
-        className="deo-input"
-        onChange={(e) => handleChange(tab, e)}
-      />
-    </div>
-  );
-
-  const SubmitRow = ({ tab }) => (
-    <div className="deo-submit-row">
-      <button className="deo-submit-btn" onClick={() => handleSubmit(tab)}>
-        ↑ Submit {tab}
-      </button>
-      <span className="deo-submit-hint">Posts to /api/{tab}</span>
-    </div>
-  );
-
   const tabMeta = {
     safety:   { label: "Safety",   num: "01" },
     quality:  { label: "Quality",  num: "02" },
@@ -392,6 +440,7 @@ const DataEntryOperator = () => {
           <div className="deo-header-icon">⬡</div>
           <h1 className="deo-title">Paint<span>shop</span> OPS</h1>
           <span className="deo-badge">Data Entry Operator</span>
+          <button className="deo-logout-btn" onClick={handleLogout}>Sign out</button>
         </header>
 
         <div className="deo-body">
@@ -425,12 +474,12 @@ const DataEntryOperator = () => {
                 <div className="deo-card">
                   <div className="deo-card-title">Incident Metrics</div>
                   <div className="deo-grid-3">
-                    <Field label="Near Miss" name="nearmiss" tab="safety" />
-                    <Field label="Incidents" name="incidents" tab="safety" />
-                    <Field label="FAC" name="fac" tab="safety" />
+                    <Field label="Near Miss" name="nearmiss" tab="safety" onChange={handleChange} />
+                    <Field label="Incidents" name="incidents" tab="safety" onChange={handleChange} />
+                    <Field label="FAC" name="fac" tab="safety" onChange={handleChange} />
                   </div>
                 </div>
-                <SubmitRow tab="safety" />
+                <SubmitRow tab="safety" onSubmit={handleSubmit} />
               </>
             )}
 
@@ -440,8 +489,8 @@ const DataEntryOperator = () => {
                 <div className="deo-card">
                   <div className="deo-card-title">Quality Scores</div>
                   <div className="deo-grid-2">
-                    <Field label="HS" name="hs" tab="quality" />
-                    <Field label="Punch" name="punch" tab="quality" />
+                    <Field label="HS" name="hs" tab="quality" onChange={handleChange} />
+                    <Field label="Punch" name="punch" tab="quality" onChange={handleChange} />
                   </div>
                 </div>
 
@@ -479,7 +528,7 @@ const DataEntryOperator = () => {
                     ))}
                   </div>
                 </div>
-                <SubmitRow tab="quality" />
+                <SubmitRow tab="quality" onSubmit={handleSubmit} />
               </>
             )}
 
@@ -489,31 +538,31 @@ const DataEntryOperator = () => {
                 <div className="deo-card">
                   <div className="deo-card-title">Paintshop In</div>
                   <div className="deo-grid-3">
-                    <Field label="A Shift In" name="ashiftin" tab="delivery" />
-                    <Field label="B Shift In" name="bshiftin" tab="delivery" />
-                    <Field label="C Shift In" name="cshiftin" tab="delivery" />
+                    <Field label="A Shift In" name="ashiftin" tab="delivery" onChange={handleChange} />
+                    <Field label="B Shift In" name="bshiftin" tab="delivery" onChange={handleChange} />
+                    <Field label="C Shift In" name="cshiftin" tab="delivery" onChange={handleChange} />
                   </div>
                 </div>
 
                 <div className="deo-card">
                   <div className="deo-card-title">Paintshop Out</div>
                   <div className="deo-grid-3">
-                    <Field label="A Shift Out" name="ashiftout" tab="delivery" />
-                    <Field label="B Shift Out" name="bshiftout" tab="delivery" />
-                    <Field label="C Shift Out" name="cshiftout" tab="delivery" />
+                    <Field label="A Shift Out" name="ashiftout" tab="delivery" onChange={handleChange} />
+                    <Field label="B Shift Out" name="bshiftout" tab="delivery" onChange={handleChange} />
+                    <Field label="C Shift Out" name="cshiftout" tab="delivery" onChange={handleChange} />
                   </div>
                 </div>
 
                 <div className="deo-card">
                   <div className="deo-card-title">Production</div>
                   <div className="deo-grid-2">
-                    <Field label="Topcoat Cycles"  name="topcoatcycles"  tab="delivery" />
-                    <Field label="Surfacer Cycles"  name="surfacercycles" tab="delivery" />
-                    <Field label="BIW Production"   name="biwproduction"  tab="delivery" />
-                    <Field label="TCF Production"   name="tcfproduction"  tab="delivery" />
+                    <Field label="Topcoat Cycles"  name="topcoatcycles"  tab="delivery" onChange={handleChange} />
+                    <Field label="Surfacer Cycles"  name="surfacercycles" tab="delivery" onChange={handleChange} />
+                    <Field label="BIW Production"   name="biwproduction"  tab="delivery" onChange={handleChange} />
+                    <Field label="TCF Production"   name="tcfproduction"  tab="delivery" onChange={handleChange} />
                   </div>
                 </div>
-                <SubmitRow tab="delivery" />
+                <SubmitRow tab="delivery" onSubmit={handleSubmit} />
               </>
             )}
 
@@ -523,14 +572,14 @@ const DataEntryOperator = () => {
                 <div className="deo-card">
                   <div className="deo-card-title">Consumption & Overheads</div>
                   <div className="deo-grid-2">
-                    <Field label="Power Consumption"   name="powerConsumption"   tab="cost" />
-                    <Field label="Gas Consumption"     name="gasConsumption"     tab="cost" />
-                    <Field label="IDM Consumption"     name="idmConsumption"     tab="cost" />
-                    <Field label="Thinner Consumption" name="thinnerConsumption" tab="cost" />
-                    <Field label="OT Nos"              name="otNos"              tab="cost" />
+                    <Field label="Power Consumption"   name="powerConsumption"   tab="cost" onChange={handleChange} />
+                    <Field label="Gas Consumption"     name="gasConsumption"     tab="cost" onChange={handleChange} />
+                    <Field label="IDM Consumption"     name="idmConsumption"     tab="cost" onChange={handleChange} />
+                    <Field label="Thinner Consumption" name="thinnerConsumption" tab="cost" onChange={handleChange} />
+                    <Field label="OT Nos"              name="otNos"              tab="cost" onChange={handleChange} />
                   </div>
                 </div>
-                <SubmitRow tab="cost" />
+                <SubmitRow tab="cost" onSubmit={handleSubmit} />
               </>
             )}
 

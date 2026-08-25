@@ -1,7 +1,5 @@
 import Delivery from "../models/delivery.model.js";
 
-
-// CREATE
 export const createDelivery = async (req, res) => {
   try {
 

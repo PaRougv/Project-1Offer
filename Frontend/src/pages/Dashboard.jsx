@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 // ── Department colour themes ───────────────────────────────────────────────────
@@ -34,7 +35,7 @@ const Badge = ({ value, low, high, labels = ["Low", "Moderate", "High"], reverse
 const MetricCard = ({ label, value, unit, accent, children }) => (
   <div
     style={{
-      background: "#FFFFFF", border: "1px solid #E2E8F0", borderRadius: 12,
+      background: "#FFFFFF", border: "1px solid #DFE5EB", borderRadius: 6,
       padding: "16px 18px", position: "relative", overflow: "hidden",
       transition: "box-shadow 0.2s, transform 0.15s",
     }}
@@ -76,8 +77,8 @@ const ShiftRow = ({ label, ashift, bshift, cshift }) => (
     <span style={{ fontSize: 12, color: "#64748B", width: 110, flexShrink: 0 }}>{label}</span>
     {[["A", ashift], ["B", bshift], ["C", cshift]].map(([s, v]) => (
       <div key={s} style={{
-        flex: 1, background: "#F8FAFC", border: "1px solid #E2E8F0",
-        borderRadius: 8, padding: "6px 10px", textAlign: "center",
+        flex: 1, background: "#F8FAFC", border: "1px solid #DFE5EB",
+        borderRadius: 6, padding: "6px 10px", textAlign: "center",
       }}>
         <div style={{ fontSize: 10, color: "#94A3B8", fontWeight: 600, marginBottom: 2 }}>
           Shift {s}
@@ -93,13 +94,13 @@ const ShiftRow = ({ label, ashift, bshift, cshift }) => (
 const SectionTitle = ({ label, color, icon }) => (
   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
     <div style={{
-      width: 28, height: 28, borderRadius: 8,
+      width: 28, height: 28, borderRadius: 6,
       background: color + "22",
       display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14,
     }}>
       {icon}
     </div>
-    <span style={{ fontSize: 13, fontWeight: 700, color: "#1E293B", letterSpacing: "-0.2px" }}>
+    <span style={{ fontSize: 13, fontWeight: 700, color: "#1E293B", letterSpacing: "0" }}>
       {label}
     </span>
   </div>
@@ -112,7 +113,7 @@ const Divider = () => (
 const EmptyState = ({ label }) => (
   <div style={{
     textAlign: "center", padding: "28px 20px",
-    background: "#F8FAFC", borderRadius: 10, border: "1px dashed #CBD5E1",
+    background: "#F8FAFC", borderRadius: 6, border: "1px dashed #CBD5E1",
   }}>
     <div style={{ fontSize: 26, marginBottom: 8 }}>📭</div>
     <p style={{ fontSize: 13, color: "#94A3B8", fontWeight: 500 }}>
@@ -127,7 +128,7 @@ const Skeleton = () => (
     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(140px,1fr))", gap: 12 }}>
       {Array.from({ length: 6 }).map((_, i) => (
         <div key={i} style={{
-          height: 90, borderRadius: 12,
+          height: 90, borderRadius: 6,
           background: "linear-gradient(90deg,#F1F5F9 25%,#E2E8F0 50%,#F1F5F9 75%)",
           backgroundSize: "200% 100%",
           animation: `shimmer 1.4s ${i * 0.1}s infinite`,
@@ -139,11 +140,22 @@ const Skeleton = () => (
 
 // ── Main Dashboard ────────────────────────────────────────────────────────────
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [filter, setFilter]         = useState("daily");
   const [data, setData]             = useState({});
   const [loading, setLoading]       = useState(true);
   const [error, setError]           = useState(null);
   const [activeDept, setActiveDept] = useState(null); // stores dept _id or null
+
+  const handleLogout = async () => {
+    try {
+      await axios.post("http://localhost:5000/api/auth/logout", {}, { withCredentials: true });
+    } catch (err) {
+      console.error("Logout failed", err);
+    } finally {
+      navigate("/login");
+    }
+  };
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -223,7 +235,7 @@ const Dashboard = () => {
                 <div key={idx} style={{
                   display: "flex", alignItems: "center", justifyContent: "space-between",
                   background: "#F8FAFC", borderRadius: 8,
-                  padding: "10px 14px", border: "1px solid #E2E8F0",
+                  padding: "10px 14px", border: "1px solid #DFE5EB",
                 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <div style={{
@@ -267,8 +279,8 @@ const Dashboard = () => {
 
         {(d.paintshopin?.length > 0 || d.paintshopout?.length > 0) && (
           <div style={{
-            background: "#F8FAFC", borderRadius: 12,
-            padding: "16px 18px", border: "1px solid #E2E8F0",
+            background: "#F8FAFC", borderRadius: 6,
+            padding: "16px 18px", border: "1px solid #DFE5EB",
           }}>
             <p style={{
               fontSize: 11, fontWeight: 700, color: "#94A3B8",
@@ -308,15 +320,15 @@ const Dashboard = () => {
   // ── render ────────────────────────────────────────────────────────────────
   return (
     <div style={{
-      minHeight: "100vh", background: "#F1F5F9",
-      fontFamily: "'DM Sans','Segoe UI',sans-serif", padding: "28px 16px",
+      minHeight: "100vh", background: "#F4F6F8",
+      fontFamily: "'DM Sans', sans-serif", padding: "24px 16px",
     }}>
       <link
         href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap"
         rel="stylesheet"
       />
 
-      <div style={{ maxWidth: 980, margin: "0 auto" }}>
+      <div style={{ maxWidth: 1080, margin: "0 auto" }}>
 
         {/* ── HEADER ── */}
         <div style={{
@@ -330,34 +342,42 @@ const Dashboard = () => {
             }}>
               Operations
             </p>
-            <h1 style={{ fontSize: 24, fontWeight: 700, color: "#0F172A", letterSpacing: "-0.5px", margin: 0 }}>
+            <h1 style={{ fontSize: 24, fontWeight: 700, color: "#0F172A", letterSpacing: "0", margin: 0 }}>
               SQDC Dashboard
             </h1>
           </div>
 
-          {/* Time filter */}
-          <div style={{
-            display: "flex", gap: 4, background: "#FFFFFF",
-            border: "1px solid #E2E8F0", borderRadius: 10, padding: 4,
-          }}>
-            {["daily", "weekly", "monthly"].map(f => (
-              <button key={f} onClick={() => setFilter(f)} style={{
-                padding: "6px 18px", borderRadius: 7, border: "none",
-                fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
-                transition: "all 0.15s", textTransform: "capitalize",
-                background: filter === f ? "#0F172A" : "transparent",
-                color:      filter === f ? "#FFFFFF"  : "#64748B",
-              }}>
-                {f}
-              </button>
-            ))}
+          <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+            <div style={{
+              display: "flex", gap: 4, background: "#FFFFFF",
+              border: "1px solid #DFE5EB", borderRadius: 6, padding: 4,
+            }}>
+              {["daily", "weekly", "monthly"].map(f => (
+                <button key={f} onClick={() => setFilter(f)} style={{
+                  padding: "6px 18px", borderRadius: 7, border: "none",
+                  fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
+                  transition: "all 0.15s", textTransform: "capitalize",
+                  background: filter === f ? "#0F172A" : "transparent",
+                  color:      filter === f ? "#FFFFFF"  : "#64748B",
+                }}>
+                  {f}
+                </button>
+              ))}
+            </div>
+            <button onClick={handleLogout} style={{
+              padding: "8px 14px", borderRadius: 8, border: "1px solid #CBD5E1",
+              background: "#FFFFFF", color: "#475569", fontSize: 13,
+              fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
+            }}>
+              Sign out
+            </button>
           </div>
         </div>
 
         {/* ── DEPARTMENT SELECTOR ── */}
         <div style={{
-          background: "#FFFFFF", border: "1px solid #E2E8F0",
-          borderRadius: 14, padding: "18px 20px", marginBottom: 18,
+          background: "#FFFFFF", border: "1px solid #DFE5EB",
+          borderRadius: 6, padding: "18px 20px", marginBottom: 18,
         }}>
           <p style={{
             fontSize: 11, fontWeight: 700, color: "#94A3B8",
@@ -416,7 +436,7 @@ const Dashboard = () => {
         {selectedDept && (
           <div style={{
             background: deptColor.bg, border: `1px solid ${deptColor.border}`,
-            borderRadius: 12, padding: "14px 20px", marginBottom: 18,
+            borderRadius: 6, padding: "14px 20px", marginBottom: 18,
             display: "flex", alignItems: "center",
             justifyContent: "space-between", gap: 12,
           }}>
@@ -451,7 +471,7 @@ const Dashboard = () => {
         {/* ── ERROR BANNER ── */}
         {error && (
           <div style={{
-            background: "#FEF2F2", border: "1px solid #FECACA", borderRadius: 12,
+            background: "#FEF2F2", border: "1px solid #FECACA", borderRadius: 6,
             padding: "14px 18px", marginBottom: 18, color: "#991B1B",
             fontSize: 14, fontWeight: 500,
           }}>
@@ -461,8 +481,8 @@ const Dashboard = () => {
 
         {/* ── MAIN METRICS PANEL ── */}
         <div style={{
-          background: "#FFFFFF", border: "1px solid #E2E8F0",
-          borderRadius: 14, padding: "26px 22px",
+          background: "#FFFFFF", border: "1px solid #DFE5EB",
+          borderRadius: 6, padding: "26px 22px",
         }}>
           {loading ? (
             <Skeleton />

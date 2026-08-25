@@ -13,7 +13,7 @@ const generateToken = (userId) => {
 export const register = async (req, res) => {
     try {
 
-        const { name, email, password, role, department } = req.body;
+        const { name, email, password, department } = req.body;
 
         if (!name || !email || !password || !department) {
             return res.status(400).json({
@@ -36,7 +36,7 @@ export const register = async (req, res) => {
             name,
             email,
             password: hashedPassword,
-            role,
+            role: "ADMIN",
             department
         });
 
@@ -182,5 +182,69 @@ export const update = async (req, res) => {
         res.status(500).json({
             message: "Server Error"
         });
+    }
+};
+
+export const updateUser = async (req, res) => {
+    try {
+        const { name, email, password, department } = req.body;
+        const user = await User.findById(req.params.id);
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        if (user.role !== "ADMIN") {
+            return res.status(403).json({ message: "Only admins can be managed" });
+        }
+
+        if (name) user.name = name;
+        if (email) user.email = email;
+        if (department) user.department = department;
+
+        if (password) {
+            user.password = await bcrypt.hash(password, 10);
+        }
+
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Admin updated successfully",
+            user: {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                department: user.department
+            }
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Server Error" });
+    }
+};
+
+export const deleteUser = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        if (user.role !== "ADMIN") {
+            return res.status(403).json({ message: "Only admins can be deleted" });
+        }
+
+        await User.findByIdAndDelete(req.params.id);
+
+        res.status(200).json({
+            success: true,
+            message: "Admin deleted successfully"
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Server Error" });
     }
 };
