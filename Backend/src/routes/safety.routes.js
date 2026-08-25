@@ -11,9 +11,9 @@ import {
 const router = express.Router();
 
 router.post("/", requireAuth, requireAdmin, createSafety);
-router.get("/", getAllSafety);
-router.get("/:id", getSafetyById);
-router.put("/:id", updateSafety);
-router.delete("/:id", deleteSafety);
+router.get("/", requireAuth, getAllSafety);
+router.get("/:id", requireAuth, getSafetyById);
+router.put("/:id", requireAuth, requireAdmin, updateSafety);
+router.delete("/:id", requireAuth, requireAdmin, deleteSafety);
 
 export default router;

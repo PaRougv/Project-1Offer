@@ -380,7 +380,7 @@ const Dashboard = () => {
         </div>
 
         {/* ── DEPARTMENT SELECTOR ── */}
-        <div style={{
+        {data.viewerRole === "PLANT_HEAD" ? <div style={{
           background: "#171c20", border: "1px solid #30383d",
           borderRadius: 6, padding: "18px 20px", marginBottom: 18,
         }}>
@@ -435,7 +435,23 @@ const Dashboard = () => {
               );
             })}
           </div>
-        </div>
+        </div> : <div style={{
+          background: "#171c20", border: "1px solid #30383d",
+          borderRadius: 6, padding: "18px 20px", marginBottom: 18,
+        }}>
+          <p style={{
+            fontSize: 11, fontWeight: 700, color: "#718087",
+            textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8,
+          }}>
+            Department scope
+          </p>
+          <p style={{ margin: 0, color: "#f4f1e8", fontSize: 15, fontWeight: 600 }}>
+            {departments[0]?.name || "Your department"}
+          </p>
+          <p style={{ margin: "5px 0 0", color: "#899398", fontSize: 12 }}>
+            Showing data from your department only
+          </p>
+        </div>}
 
         {/* ── DEPT CONTEXT BANNER ── */}
         {selectedDept && (

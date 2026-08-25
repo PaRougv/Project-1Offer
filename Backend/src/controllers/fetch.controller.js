@@ -61,10 +61,9 @@ export const getDashboardData = async (req, res) => {
       createdAt: { $gte: startDate }
     });
 
-    const department = await Department.find({
-      ...departmentFilter,
-      createdAt: { $gte: startDate }
-    });
+    const department = req.user.role === "PLANT_HEAD"
+      ? await Department.find({ createdAt: { $gte: startDate } })
+      : await Department.find({ _id: req.user.department });
 
 
 
@@ -73,7 +72,8 @@ export const getDashboardData = async (req, res) => {
       quality,
       delivery,
       cost,
-      department
+      department,
+      viewerRole: req.user.role
     });
 
   } catch (error) {

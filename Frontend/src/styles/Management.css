@@ -10,9 +10,15 @@
 .management-panel h2 { margin: 0 0 18px; color: #f4f1e8; font: 700 20px 'Barlow Condensed', sans-serif; letter-spacing: 1px; text-transform: uppercase; }
 .management-panel input, .management-panel select { display: block; width: 100%; margin-bottom: 12px; padding: 11px 12px; border: 1px solid #3b464c; outline: none; color: #f4f1e8; background: #101316; font: 14px 'Barlow', sans-serif; }
 .management-panel input:focus, .management-panel select:focus { border-color: #e8c547; }
+.password-field { position: relative; margin-bottom: 12px; }
+.password-field input { margin-bottom: 0; padding-right: 58px; }
+.password-field button { position: absolute; top: 50%; right: 10px; transform: translateY(-50%); border: 0; color: #899398; background: transparent; cursor: pointer; font-size: 11px; text-transform: uppercase; }
+.password-field button:hover { color: #e8c547; }
 .management-primary { width: 100%; margin-top: 5px; }
 .management-row { display: flex; justify-content: space-between; gap: 18px; padding: 13px 0; border-top: 1px solid #30383d; }
 .management-row strong { color: #f4f1e8; }
 .management-row span, .management-message { color: #899398; font-size: 13px; }
+.management-action { border: 1px solid #8e5a5a; color: #ff9d9d; background: transparent; cursor: pointer; padding: 7px 10px; font-size: 11px; text-transform: uppercase; }
+.management-action:disabled { border-color: #3b464c; color: #718087; cursor: default; }
 .management-message { max-width: 1080px; margin: 0 auto 18px; }
 @media (max-width: 700px) { .management-root { padding: 24px; } .management-grid { grid-template-columns: 1fr; } .management-header h1 { font-size: 28px; } .management-row { display: block; } .management-row span { display: block; margin-top: 4px; } }

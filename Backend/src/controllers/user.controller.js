@@ -82,7 +82,7 @@ export const login = async (req, res) => {
 
         const user = await User.findOne({ email });
 
-        if (!user) {
+        if (!user || !user.isActive) {
             return res.status(400).json({
                 message: "Invalid credentials"
             });
@@ -195,15 +195,33 @@ export const createHOD = (req, res) => createManagedUser(req, res, "HOD");
 export const createAdmin = (req, res) => createManagedUser(req, res, "ADMIN");
 
 export const getHODs = async (req, res) => {
-    const hods = await User.find({ role: "HOD" }).select("_id name email role department").populate("department", "name");
+    const hods = await User.find({ role: "HOD" }).select("_id name email role department isActive").populate("department", "name");
     res.status(200).json({ success: true, hods });
 };
 
 export const getAdmins = async (req, res) => {
     const admins = await User.find({ role: "ADMIN", department: req.user.department })
-        .select("_id name email role department").populate("department", "name");
+        .select("_id name email role department isActive").populate("department", "name");
     res.status(200).json({ success: true, admins });
 };
+
+    const deactivateManagedUser = async (req, res, targetRole, requireSameDepartment) => {
+        try {
+            const query = { _id: req.params.id, role: targetRole };
+            if (requireSameDepartment) query.department = req.user.department;
+
+            const user = await User.findOneAndUpdate(query, { isActive: false }, { new: true })
+                .select("_id name email role department isActive");
+            if (!user) return res.status(404).json({ message: `${targetRole} not found in your scope` });
+
+            return res.status(200).json({ success: true, message: "User deactivated", user });
+        } catch (error) {
+            return res.status(500).json({ message: "Server Error", error: error.message });
+        }
+    };
+
+    export const deactivateHOD = (req, res) => deactivateManagedUser(req, res, "HOD", false);
+    export const deactivateAdmin = (req, res) => deactivateManagedUser(req, res, "ADMIN", true);
 
 export const update = async (req, res) => {
     try {

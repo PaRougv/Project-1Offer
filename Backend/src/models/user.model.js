@@ -25,6 +25,10 @@ const userSchema = new mongoose.Schema({
         required: function () {
             return this.role !== 'PLANT_HEAD';
         }
+    },
+    isActive: {
+        type: Boolean,
+        default: true
     }
 
 }, { timestamps: true });

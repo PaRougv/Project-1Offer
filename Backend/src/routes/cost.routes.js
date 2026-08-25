@@ -12,9 +12,9 @@ import {
 const router = express.Router();
 
 router.post("/", requireAuth, requireAdmin, createCost);
-router.get("/", getAllCost);
-router.get("/:id", getCostById);
-router.put("/:id", updateCost);
-router.delete("/:id", deleteCost);
+router.get("/", requireAuth, getAllCost);
+router.get("/:id", requireAuth, getCostById);
+router.put("/:id", requireAuth, requireAdmin, updateCost);
+router.delete("/:id", requireAuth, requireAdmin, deleteCost);
 
 export default router;

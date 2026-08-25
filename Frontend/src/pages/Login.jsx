@@ -168,6 +168,19 @@ const css = `
     border-color: var(--accent);
     box-shadow: 0 0 0 2px rgba(232,197,71,0.12);
   }
+  .login-password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 0;
+    color: var(--muted);
+    background: transparent;
+    cursor: pointer;
+    font-size: 11px;
+    text-transform: uppercase;
+  }
+  .login-password-toggle:hover { color: var(--accent); }
 
   /* ── Error ── */
   .login-error {
@@ -247,6 +260,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [user, setUser] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -321,7 +335,7 @@ const Login = () => {
               <div className="login-input-wrap">
                 <span className="login-input-icon">🔒</span>
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   name="password"
                   placeholder="••••••••"
                   value={formData.password}
@@ -329,6 +343,14 @@ const Login = () => {
                   className="login-input"
                   required
                 />
+                <button
+                  type="button"
+                  className="login-password-toggle"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? "Hide" : "Show"}
+                </button>
               </div>
             </div>
 

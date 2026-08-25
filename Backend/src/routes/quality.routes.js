@@ -11,9 +11,9 @@ import {
 const router = express.Router();
 
 router.post("/", requireAuth, requireAdmin, createQuality);
-router.get("/", getAllQuality);
-router.get("/:id", getQualityById);
-router.put("/:id", updateQuality);
-router.delete("/:id", deleteQuality);
+router.get("/", requireAuth, getAllQuality);
+router.get("/:id", requireAuth, getQualityById);
+router.put("/:id", requireAuth, requireAdmin, updateQuality);
+router.delete("/:id", requireAuth, requireAdmin, deleteQuality);
 
 export default router;
