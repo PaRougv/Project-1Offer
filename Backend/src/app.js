@@ -38,6 +38,11 @@ app.use('/api/auth/login', rateLimit({
     legacyHeaders: false,
     message: { message: 'Too many login attempts. Try again later.' }
 }));
+
+app.get('/', (req, res) => {
+    res.status(200).json({ status: 'ok', service: 'paintshop-api' });
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/departments', departmentRoutes);
 app.use('/api/safety' , safetyRoutes)
