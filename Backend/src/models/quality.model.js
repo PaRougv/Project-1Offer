@@ -1,6 +1,11 @@
 import mongoose from "mongoose";
 
 const qualitySchema = new mongoose.Schema({
+  department: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Department",
+    required: true
+  },
     hs: {
         type: Number,
         required: true,
@@ -21,7 +26,7 @@ const qualitySchema = new mongoose.Schema({
         },
       },
     ],
-})
+  }, { timestamps: true })
 
 const Quality = mongoose.model('Quality' , qualitySchema)
 export default Quality;

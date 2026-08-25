@@ -2,6 +2,11 @@ import mongoose from "mongoose";
 
 const costSchema = new mongoose.Schema(
   {
+    department: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Department",
+      required: true
+    },
     powerConsumption: {
       type: Number,
       required: true,

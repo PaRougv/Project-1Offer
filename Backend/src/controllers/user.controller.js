@@ -146,6 +146,65 @@ export const logout = async (req, res) => {
 
 };
 
+export const getCurrentUser = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id)
+            .select("_id name email role department");
+
+        if (!user) {
+            return res.status(401).json({ message: "User not found" });
+        }
+
+        res.status(200).json({ user });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Server Error" });
+    }
+};
+
+const createManagedUser = async (req, res, role) => {
+    try {
+        const { name, email, password, department } = req.body;
+        const departmentId = role === "HOD" ? department : req.user.department;
+
+        if (!name || !email || !password || !departmentId) {
+            return res.status(400).json({ message: "Name, email, password, and department are required" });
+        }
+        if (await User.findOne({ email })) {
+            return res.status(400).json({ message: "User already exists" });
+        }
+
+        const user = await User.create({
+            name,
+            email,
+            password: await bcrypt.hash(password, 10),
+            role,
+            department: departmentId
+        });
+
+        return res.status(201).json({
+            success: true,
+            user: { _id: user._id, name: user.name, email: user.email, role: user.role, department: user.department }
+        });
+    } catch (error) {
+        return res.status(500).json({ message: "Server Error", error: error.message });
+    }
+};
+
+export const createHOD = (req, res) => createManagedUser(req, res, "HOD");
+export const createAdmin = (req, res) => createManagedUser(req, res, "ADMIN");
+
+export const getHODs = async (req, res) => {
+    const hods = await User.find({ role: "HOD" }).select("_id name email role department").populate("department", "name");
+    res.status(200).json({ success: true, hods });
+};
+
+export const getAdmins = async (req, res) => {
+    const admins = await User.find({ role: "ADMIN", department: req.user.department })
+        .select("_id name email role department").populate("department", "name");
+    res.status(200).json({ success: true, admins });
+};
+
 export const update = async (req, res) => {
     try {
         const userId = req.user.id;

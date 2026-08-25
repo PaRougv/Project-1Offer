@@ -6,6 +6,7 @@ export const createQuality = async (req, res) => {
     
 
     const quality = new Quality({
+      department: req.user.department,
       hs,
       punch,
       topIssues,

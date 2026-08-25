@@ -10,7 +10,7 @@ export const requireAuth = async (req, res, next) => {
         }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const user = await User.findById(decoded.id).select("_id role");
+        const user = await User.findById(decoded.id).select("_id name email role department");
 
         if (!user) {
             return res.status(401).json({ message: "User not found" });
@@ -24,9 +24,23 @@ export const requireAuth = async (req, res, next) => {
 };
 
 export const requireHOD = (req, res, next) => {
-    if (req.user.role !== "HOD") {
+    if (req.user.role !== 'HOD') {
         return res.status(403).json({ message: "HOD access required" });
     }
 
+    next();
+};
+
+export const requirePlantHead = (req, res, next) => {
+    if (req.user.role !== "PLANT_HEAD") {
+        return res.status(403).json({ message: "Plant Head access required" });
+    }
+    next();
+};
+
+export const requireAdmin = (req, res, next) => {
+    if (req.user.role !== 'ADMIN') {
+        return res.status(403).json({ message: "Admin access required" });
+    }
     next();
 };

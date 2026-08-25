@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import API_URL from "../config/api.js";
 
 // ── Department colour themes ───────────────────────────────────────────────────
 const DEPT_PALETTE = [
@@ -100,7 +101,7 @@ const SectionTitle = ({ label, color, icon }) => (
     }}>
       {icon}
     </div>
-    <span style={{ fontSize: 13, fontWeight: 700, color: "#1E293B", letterSpacing: "0" }}>
+    <span style={{ fontSize: 13, fontWeight: 700, color: "#f4f1e8", letterSpacing: "0" }}>
       {label}
     </span>
   </div>
@@ -149,7 +150,7 @@ const Dashboard = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post("http://localhost:5000/api/auth/logout", {}, { withCredentials: true });
+      await axios.post(`${API_URL}/auth/logout`, {}, { withCredentials: true });
     } catch (err) {
       console.error("Logout failed", err);
     } finally {
@@ -162,7 +163,8 @@ const Dashboard = () => {
     setError(null);
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/dashboard?filter=${filter}`
+        `${API_URL}/dashboard?filter=${filter}`,
+        { withCredentials: true }
       );
       setData(res.data);
     } catch (err) {
@@ -277,7 +279,7 @@ const Dashboard = () => {
           <MetricCard label="TCF production"  value={d.tcfproduction}  unit="units" accent="#10B981" />
         </div>
 
-        {(d.paintshopin?.length > 0 || d.paintshopout?.length > 0) && (
+        {(d.ashiftin !== undefined || d.ashiftout !== undefined) && (
           <div style={{
             background: "#1d2429", borderRadius: 6,
             padding: "16px 18px", border: "1px solid #30383d",
@@ -288,14 +290,10 @@ const Dashboard = () => {
             }}>
               Shift breakdown
             </p>
-            {d.paintshopin?.map((row, ri) => (
-              <ShiftRow key={`in-${ri}`} label="Paint shop IN"
-                ashift={row.ashift} bshift={row.bshift} cshift={row.cshift} />
-            ))}
-            {d.paintshopout?.map((row, ri) => (
-              <ShiftRow key={`out-${ri}`} label="Paint shop OUT"
-                ashift={row.ashift} bshift={row.bshift} cshift={row.cshift} />
-            ))}
+            <ShiftRow label="Paint shop IN"
+              ashift={d.ashiftin} bshift={d.bshiftin} cshift={d.cshiftin} />
+            <ShiftRow label="Paint shop OUT"
+              ashift={d.ashiftout} bshift={d.bshiftout} cshift={d.cshiftout} />
           </div>
         )}
       </div>
@@ -370,6 +368,13 @@ const Dashboard = () => {
               fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
             }}>
               Sign out
+            </button>
+            <button onClick={() => navigate("/hod/manage")} style={{
+              padding: "8px 14px", borderRadius: 8, border: "1px solid #4b585e",
+              background: "#171c20", color: "#b6c0c4", fontSize: 13,
+              fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
+            }}>
+              Manage admins
             </button>
           </div>
         </div>

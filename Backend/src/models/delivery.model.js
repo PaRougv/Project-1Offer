@@ -1,6 +1,11 @@
 import mongoose from "mongoose";
 
 const deliverySchema = new mongoose.Schema({
+    department: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Department",
+        required: true
+    },
     ashiftin: {
         type: Number,
         required: true

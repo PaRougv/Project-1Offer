@@ -5,7 +5,7 @@ export const createDelivery = async (req, res) => {
 
     console.log("Incoming Body:", req.body);
 
-    const delivery = await Delivery.create(req.body);
+    const delivery = await Delivery.create({ ...req.body, department: req.user.department });
 
     res.status(201).json({
       success: true,

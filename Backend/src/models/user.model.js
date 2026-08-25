@@ -16,13 +16,15 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['HOD', 'ADMIN'],
+        enum: ['PLANT_HEAD', 'HOD', 'ADMIN'],
         default: 'ADMIN',
     },
     department: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Department",
-        required: true
+        required: function () {
+            return this.role !== 'PLANT_HEAD';
+        }
     }
 
 }, { timestamps: true });

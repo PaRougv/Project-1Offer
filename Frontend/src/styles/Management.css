@@ -1,0 +1,18 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@300;400;500;600&display=swap');
+
+.management-root { min-height: 100vh; padding: 32px 6vw; color: #f4f1e8; background: #101316; font-family: 'Barlow', sans-serif; }
+.management-header { display: flex; align-items: center; justify-content: space-between; max-width: 1080px; margin: 0 auto 28px; padding-bottom: 20px; border-bottom: 1px solid #30383d; }
+.management-kicker { margin: 0 0 5px; color: #e8c547; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; }
+.management-header h1 { margin: 0; font: 700 34px 'Barlow Condensed', sans-serif; letter-spacing: 1px; text-transform: uppercase; }
+.management-header button, .management-primary { border: 0; cursor: pointer; color: #101316; background: #e8c547; padding: 11px 16px; font: 700 13px 'Barlow Condensed', sans-serif; letter-spacing: 1px; text-transform: uppercase; }
+.management-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; max-width: 1080px; margin: 0 auto 18px; }
+.management-panel { padding: 22px; border: 1px solid #30383d; background: #171c20; }
+.management-panel h2 { margin: 0 0 18px; color: #f4f1e8; font: 700 20px 'Barlow Condensed', sans-serif; letter-spacing: 1px; text-transform: uppercase; }
+.management-panel input, .management-panel select { display: block; width: 100%; margin-bottom: 12px; padding: 11px 12px; border: 1px solid #3b464c; outline: none; color: #f4f1e8; background: #101316; font: 14px 'Barlow', sans-serif; }
+.management-panel input:focus, .management-panel select:focus { border-color: #e8c547; }
+.management-primary { width: 100%; margin-top: 5px; }
+.management-row { display: flex; justify-content: space-between; gap: 18px; padding: 13px 0; border-top: 1px solid #30383d; }
+.management-row strong { color: #f4f1e8; }
+.management-row span, .management-message { color: #899398; font-size: 13px; }
+.management-message { max-width: 1080px; margin: 0 auto 18px; }
+@media (max-width: 700px) { .management-root { padding: 24px; } .management-grid { grid-template-columns: 1fr; } .management-header h1 { font-size: 28px; } .management-row { display: block; } .management-row span { display: block; margin-top: 4px; } }

@@ -5,6 +5,7 @@ export const createSafety = async (req, res) => {
     const { nearmiss, incidents, fac } = req.body;
 
     const safety = new Safety({
+      department: req.user.department,
       nearmiss,
       incidents,
       fac,

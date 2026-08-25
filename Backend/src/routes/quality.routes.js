@@ -1,4 +1,5 @@
 import express from "express";
+import { requireAuth, requireAdmin } from "../middleware/auth.middleware.js";
 import {
   createQuality,
   getAllQuality,
@@ -9,7 +10,7 @@ import {
 
 const router = express.Router();
 
-router.post("/", createQuality);
+router.post("/", requireAuth, requireAdmin, createQuality);
 router.get("/", getAllQuality);
 router.get("/:id", getQualityById);
 router.put("/:id", updateQuality);

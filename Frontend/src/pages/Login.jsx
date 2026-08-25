@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import API_URL from "../config/api.js";
 
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500&display=swap');
@@ -258,7 +259,7 @@ const Login = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/login",
+        `${API_URL}/auth/login`,
         formData,
         { withCredentials: true }
       );
@@ -266,7 +267,8 @@ const Login = () => {
       console.log("Login Success:", response.data.user);
       const role = response.data.user.role;
 
-      if (role === "HOD")        navigate("/dashboard");
+      if (role === "PLANT_HEAD") navigate("/plant-head");
+      else if (role === "HOD")   navigate("/dashboard");
       else if (role === "ADMIN") navigate("/admin");
       else                       navigate("/login");
 

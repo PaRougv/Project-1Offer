@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import API_URL from "../config/api.js";
 
 // ── Inline styles / design tokens ──────────────────────────────────────────
 const css = `
@@ -347,7 +348,7 @@ const DataEntryOperator = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post("http://localhost:5000/api/auth/logout", {}, { withCredentials: true });
+      await axios.post(`${API_URL}/auth/logout`, {}, { withCredentials: true });
     } catch (error) {
       console.error("Logout failed", error);
     } finally {
@@ -393,10 +394,10 @@ const DataEntryOperator = () => {
       let payload = formData[tab];
 
       switch (tab) {
-        case "safety":   url = "http://localhost:5000/api/safety";   break;
-        case "quality":  url = "http://localhost:5000/api/quality";  break;
+        case "safety":   url = `${API_URL}/safety`;   break;
+        case "quality":  url = `${API_URL}/quality`;  break;
         case "delivery":
-          url = "http://localhost:5000/api/delivery";
+          url = `${API_URL}/delivery`;
           payload = {
             ashiftin:       Number(formData.delivery.ashiftin || 0),
             bshiftin:       Number(formData.delivery.bshiftin || 0),
@@ -411,11 +412,11 @@ const DataEntryOperator = () => {
           };
           console.log("Delivery Payload:", payload);
           break;
-        case "cost": url = "http://localhost:5000/api/cost"; break;
+        case "cost": url = `${API_URL}/cost`; break;
         default: break;
       }
 
-      await axios.post(url, payload);
+      await axios.post(url, payload, { withCredentials: true });
       alert(`${tab} submitted successfully`);
     } catch (error) {
       console.error(error);

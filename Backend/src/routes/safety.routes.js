@@ -1,4 +1,5 @@
 import express from "express";
+import { requireAuth, requireAdmin } from "../middleware/auth.middleware.js";
 import {
   createSafety,
   getAllSafety,
@@ -9,7 +10,7 @@ import {
 
 const router = express.Router();
 
-router.post("/", createSafety);
+router.post("/", requireAuth, requireAdmin, createSafety);
 router.get("/", getAllSafety);
 router.get("/:id", getSafetyById);
 router.put("/:id", updateSafety);

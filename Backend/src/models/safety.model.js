@@ -1,6 +1,11 @@
 import mongoose from 'mongoose'
 
 const safetySchema = new mongoose.Schema({
+    department: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Department",
+        required: true
+    },
     nearmiss: {
         type: Number,
         required: true

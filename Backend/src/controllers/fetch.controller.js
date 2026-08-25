@@ -37,24 +37,32 @@ export const getDashboardData = async (req, res) => {
     const { filter } = req.query;
 
     const startDate = getDateRange(filter);
+    const departmentFilter = req.user.role === "PLANT_HEAD"
+      ? {}
+      : { department: req.user.department };
 
     const safety = await Safety.find({
+      ...departmentFilter,
       createdAt: { $gte: startDate }
     });
 
     const quality = await Quality.find({
+      ...departmentFilter,
       createdAt: { $gte: startDate }
     });
 
     const delivery = await Delivery.find({
+      ...departmentFilter,
       createdAt: { $gte: startDate }
     });
 
     const cost = await Cost.find({
+      ...departmentFilter,
       createdAt: { $gte: startDate }
     });
 
     const department = await Department.find({
+      ...departmentFilter,
       createdAt: { $gte: startDate }
     });
 

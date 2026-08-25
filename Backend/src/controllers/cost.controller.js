@@ -11,6 +11,7 @@ export const createCost = async (req, res) => {
     } = req.body;
 
     const cost = new Cost({
+      department: req.user.department,
       powerConsumption,
       gasConsumption,
       idmConsumption,

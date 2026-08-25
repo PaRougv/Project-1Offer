@@ -1,4 +1,5 @@
 import express from 'express'
+import { requireAuth, requirePlantHead } from '../middleware/auth.middleware.js'
 import {
     createDepartment,
     getDepartment,
@@ -8,9 +9,9 @@ import {
 
 const router = express.Router()
 
-router.post('/' , createDepartment)
-router.get('/' , getDepartment)
-router.put('/:id' , updateDepartment)
-router.delete('/:id' , deleteDepartment)
+router.post('/' , requireAuth, requirePlantHead, createDepartment)
+router.get('/' , requireAuth, getDepartment)
+router.put('/:id' , requireAuth, requirePlantHead, updateDepartment)
+router.delete('/:id' , requireAuth, requirePlantHead, deleteDepartment)
 
 export default router
