@@ -32,7 +32,7 @@ export const createSafety = async (req, res) => {
 // GET ALL
 export const getAllSafety = async (req, res) => {
   try {
-    const safety = await Safety.find().sort({ createdAt: -1 });
+    const safety = await Safety.find(req.user.role === "PLANT_HEAD" ? {} : { department: req.user.department }).sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
@@ -53,7 +53,7 @@ export const getAllSafety = async (req, res) => {
 // GET SINGLE
 export const getSafetyById = async (req, res) => {
   try {
-    const safety = await Safety.findById(req.params.id);
+    const safety = await Safety.findOne({ _id: req.params.id, ...(req.user.role === "PLANT_HEAD" ? {} : { department: req.user.department }) });
 
     if (!safety) {
       return res.status(404).json({
@@ -82,8 +82,8 @@ export const updateSafety = async (req, res) => {
   try {
     const { nearmiss, incidents, fac } = req.body;
 
-    const safety = await Safety.findByIdAndUpdate(
-      req.params.id,
+    const safety = await Safety.findOneAndUpdate(
+      { _id: req.params.id, department: req.user.department },
       {
         nearmiss,
         incidents,
@@ -118,7 +118,7 @@ export const updateSafety = async (req, res) => {
 // DELETE
 export const deleteSafety = async (req, res) => {
   try {
-    const safety = await Safety.findByIdAndDelete(req.params.id);
+    const safety = await Safety.findOneAndDelete({ _id: req.params.id, department: req.user.department });
 
     if (!safety) {
       return res.status(404).json({

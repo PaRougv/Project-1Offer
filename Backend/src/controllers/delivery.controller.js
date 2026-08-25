@@ -29,7 +29,7 @@ export const createDelivery = async (req, res) => {
 // GET ALL
 export const getAllDelivery = async (req, res) => {
   try {
-    const delivery = await Delivery.find().sort({ createdAt: -1 });
+    const delivery = await Delivery.find(req.user.role === "PLANT_HEAD" ? {} : { department: req.user.department }).sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
@@ -51,7 +51,7 @@ export const getAllDelivery = async (req, res) => {
 // GET SINGLE
 export const getDeliveryById = async (req, res) => {
   try {
-    const delivery = await Delivery.findById(req.params.id);
+    const delivery = await Delivery.findOne({ _id: req.params.id, ...(req.user.role === "PLANT_HEAD" ? {} : { department: req.user.department }) });
 
     if (!delivery) {
       return res.status(404).json({
@@ -88,8 +88,8 @@ export const updateDelivery = async (req, res) => {
       tcfproduction
     } = req.body;
 
-    const delivery = await Delivery.findByIdAndUpdate(
-      req.params.id,
+    const delivery = await Delivery.findOneAndUpdate(
+      { _id: req.params.id, department: req.user.department },
       {
         paintshopin,
         paintshopout,
@@ -128,7 +128,7 @@ export const updateDelivery = async (req, res) => {
 // DELETE
 export const deleteDelivery = async (req, res) => {
   try {
-    const delivery = await Delivery.findByIdAndDelete(req.params.id);
+    const delivery = await Delivery.findOneAndDelete({ _id: req.params.id, department: req.user.department });
 
     if (!delivery) {
       return res.status(404).json({

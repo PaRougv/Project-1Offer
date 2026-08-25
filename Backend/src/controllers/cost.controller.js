@@ -41,7 +41,7 @@ export const createCost = async (req, res) => {
 // GET ALL
 export const getAllCost = async (req, res) => {
   try {
-    const cost = await Cost.find().sort({ createdAt: -1 });
+    const cost = await Cost.find(req.user.role === "PLANT_HEAD" ? {} : { department: req.user.department }).sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
@@ -63,7 +63,7 @@ export const getAllCost = async (req, res) => {
 // GET SINGLE
 export const getCostById = async (req, res) => {
   try {
-    const cost = await Cost.findById(req.params.id);
+    const cost = await Cost.findOne({ _id: req.params.id, ...(req.user.role === "PLANT_HEAD" ? {} : { department: req.user.department }) });
 
     if (!cost) {
       return res.status(404).json({
@@ -99,8 +99,8 @@ export const updateCost = async (req, res) => {
       otNos
     } = req.body;
 
-    const cost = await Cost.findByIdAndUpdate(
-      req.params.id,
+    const cost = await Cost.findOneAndUpdate(
+      { _id: req.params.id, department: req.user.department },
       {
         powerConsumption,
         gasConsumption,
@@ -138,7 +138,7 @@ export const updateCost = async (req, res) => {
 // DELETE
 export const deleteCost = async (req, res) => {
   try {
-    const cost = await Cost.findByIdAndDelete(req.params.id);
+    const cost = await Cost.findOneAndDelete({ _id: req.params.id, department: req.user.department });
 
     if (!cost) {
       return res.status(404).json({

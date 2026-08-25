@@ -1,6 +1,7 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import Department from "../models/department.model.js";
 
 const generateToken = (userId) => {
     return jwt.sign(
@@ -13,7 +14,7 @@ const generateToken = (userId) => {
 export const register = async (req, res) => {
     try {
 
-        const { name, email, password, department } = req.body;
+        const { name, email, password } = req.body;
 
         if (!name || !email || !password || !department) {
             return res.status(400).json({
@@ -42,12 +43,7 @@ export const register = async (req, res) => {
 
         const token = generateToken(user._id);
 
-        res.cookie("token", token, {
-            httpOnly: true,
-            secure: false,
-            sameSite: "strict",
-            maxAge: 7 * 24 * 60 * 60 * 1000
-        });
+        res.cookie("token", token, authCookieOptions);
 
         res.status(201).json({
             success: true,
@@ -82,7 +78,7 @@ export const login = async (req, res) => {
 
         const user = await User.findOne({ email });
 
-        if (!user || !user.isActive) {
+        if (!user || user.isActive === false) {
             return res.status(400).json({
                 message: "Invalid credentials"
             });
@@ -98,12 +94,7 @@ export const login = async (req, res) => {
 
         const token = generateToken(user._id);
 
-        res.cookie("token", token, {
-            httpOnly: true,
-            secure: false,
-            sameSite: "strict",
-            maxAge: 7 * 24 * 60 * 60 * 1000
-        });
+        res.cookie("token", token, authCookieOptions);
 
         res.status(200).json({
             success: true,
@@ -129,6 +120,8 @@ export const logout = async (req, res) => {
     try {
         res.cookie("token", "", {
             httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "lax" : "strict",
             expires: new Date(0)
         });
 
@@ -149,7 +142,7 @@ export const logout = async (req, res) => {
 export const getCurrentUser = async (req, res) => {
     try {
         const user = await User.findById(req.user.id)
-            .select("_id name email role department");
+            .select("_id name email role department isActive");
 
         if (!user) {
             return res.status(401).json({ message: "User not found" });
@@ -169,6 +162,9 @@ const createManagedUser = async (req, res, role) => {
 
         if (!name || !email || !password || !departmentId) {
             return res.status(400).json({ message: "Name, email, password, and department are required" });
+        }
+        if (!(await Department.exists({ _id: departmentId }))) {
+            return res.status(400).json({ message: "Department not found" });
         }
         if (await User.findOne({ email })) {
             return res.status(400).json({ message: "User already exists" });
@@ -227,7 +223,7 @@ export const update = async (req, res) => {
     try {
         const userId = req.user.id;
 
-        const { name, email, password, role } = req.body;
+        const { name, email, password } = req.body;
 
         const user = await User.findById(userId);
 
@@ -239,8 +235,6 @@ export const update = async (req, res) => {
 
         if (name) user.name = name;
         if (email) user.email = email;
-        if (role) user.role = role;
-
         if (password) {
             const salt = await bcrypt.genSalt(10);
             user.password = await bcrypt.hash(password, salt);
@@ -265,19 +259,18 @@ export const update = async (req, res) => {
 export const updateUser = async (req, res) => {
     try {
         const { name, email, password, department } = req.body;
-        const user = await User.findById(req.params.id);
+        const user = await User.findOne({
+            _id: req.params.id,
+            role: "ADMIN",
+            department: req.user.department
+        });
 
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
 
-        if (user.role !== "ADMIN") {
-            return res.status(403).json({ message: "Only admins can be managed" });
-        }
-
         if (name) user.name = name;
         if (email) user.email = email;
-        if (department) user.department = department;
 
         if (password) {
             user.password = await bcrypt.hash(password, 10);
@@ -304,17 +297,21 @@ export const updateUser = async (req, res) => {
 
 export const deleteUser = async (req, res) => {
     try {
-        const user = await User.findById(req.params.id);
+        const user = await User.findOne({
+            _id: req.params.id,
+            role: "ADMIN",
+            department: req.user.department
+        });
 
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
 
-        if (user.role !== "ADMIN") {
-            return res.status(403).json({ message: "Only admins can be deleted" });
-        }
-
-        await User.findByIdAndDelete(req.params.id);
+        await User.findOneAndDelete({
+            _id: req.params.id,
+            role: "ADMIN",
+            department: req.user.department
+        });
 
         res.status(200).json({
             success: true,
@@ -324,4 +321,11 @@ export const deleteUser = async (req, res) => {
         console.log(error);
         res.status(500).json({ message: "Server Error" });
     }
+};
+
+const authCookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "lax" : "strict",
+    maxAge: 7 * 24 * 60 * 60 * 1000
 };

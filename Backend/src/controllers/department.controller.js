@@ -89,7 +89,9 @@ export const deleteDepartment = async (req , res) => {
 export const getDepartment = async (req , res) => {
     try {
 
-        const departments = await Department.find()
+        const departments = req.user.role === "PLANT_HEAD"
+            ? await Department.find()
+            : await Department.find({ _id: req.user.department })
 
         return res.status(200).json({
             success: true,

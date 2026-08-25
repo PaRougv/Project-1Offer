@@ -36,6 +36,10 @@ export const getDashboardData = async (req, res) => {
 
     const { filter } = req.query;
 
+    if (!['daily', 'weekly', 'monthly'].includes(filter)) {
+      return res.status(400).json({ message: "Invalid dashboard filter" });
+    }
+
     const startDate = getDateRange(filter);
     const departmentFilter = req.user.role === "PLANT_HEAD"
       ? {}

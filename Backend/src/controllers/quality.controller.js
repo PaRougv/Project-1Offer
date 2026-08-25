@@ -33,7 +33,7 @@ export const createQuality = async (req, res) => {
 
 export const getAllQuality = async (req, res) => {
   try {
-    const quality = await Quality.find().sort({ createdAt: -1 });
+    const quality = await Quality.find(req.user.role === "PLANT_HEAD" ? {} : { department: req.user.department }).sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
@@ -53,7 +53,7 @@ export const getAllQuality = async (req, res) => {
 
 export const getQualityById = async (req, res) => {
   try {
-    const quality = await Quality.findById(req.params.id);
+    const quality = await Quality.findOne({ _id: req.params.id, ...(req.user.role === "PLANT_HEAD" ? {} : { department: req.user.department }) });
 
     if (!quality) {
       return res.status(404).json({
@@ -81,8 +81,8 @@ export const updateQuality = async (req, res) => {
   try {
     const { hs, punch, topIssues } = req.body;
 
-    const quality = await Quality.findByIdAndUpdate(
-      req.params.id,
+    const quality = await Quality.findOneAndUpdate(
+      { _id: req.params.id, department: req.user.department },
       {
         hs,
         punch,
@@ -117,7 +117,7 @@ export const updateQuality = async (req, res) => {
 // DELETE
 export const deleteQuality = async (req, res) => {
   try {
-    const quality = await Quality.findByIdAndDelete(req.params.id);
+    const quality = await Quality.findOneAndDelete({ _id: req.params.id, department: req.user.department });
 
     if (!quality) {
       return res.status(404).json({

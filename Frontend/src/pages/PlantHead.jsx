@@ -52,9 +52,14 @@ const PlantHead = () => {
     } catch (error) { setMessage(error.response?.data?.message || "Unable to deactivate HOD."); }
   };
 
+  const signOut = async () => {
+    await axios.post(`${API_URL}/auth/logout`, {}, { withCredentials: true });
+    navigate("/login");
+  };
+
   return (
     <main className="management-root">
-      <header className="management-header"><div><p className="management-kicker">Plant control</p><h1>Plant Head</h1></div><button onClick={() => navigate("/login")}>Sign out</button></header>
+      <header className="management-header"><div><p className="management-kicker">Plant control</p><h1>Plant Head</h1></div><button onClick={signOut}>Sign out</button></header>
       {message && <p className="management-message">{message}</p>}
       <div className="management-grid">
         <form className="management-panel" onSubmit={createDepartment}><h2>New department</h2><input placeholder="Department name" value={department.name} onChange={e => setDepartment({ ...department, name: e.target.value })} required /><input placeholder="Description" value={department.description} onChange={e => setDepartment({ ...department, description: e.target.value })} required /><button className="management-primary">Create department</button></form>
