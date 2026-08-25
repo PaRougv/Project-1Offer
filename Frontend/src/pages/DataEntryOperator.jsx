@@ -9,17 +9,17 @@ const css = `
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg:        #f4f6f8;
-    --surface:   #ffffff;
-    --panel:     #ffffff;
-    --border:    #dfe5eb;
-    --accent:    #b7791f;
-    --accent2:   #2563eb;
-    --danger:    #b91c1c;
-    --success:   #15803d;
-    --text:      #1e293b;
-    --muted:     #64748b;
-    --label:     #475569;
+    --bg:        #101316;
+    --surface:   #171c20;
+    --panel:     #1d2429;
+    --border:    #30383d;
+    --accent:    #e8c547;
+    --accent2:   #7aa2c8;
+    --danger:    #ff7b7b;
+    --success:   #81b29a;
+    --text:      #f4f1e8;
+    --muted:     #899398;
+    --label:     #b6c0c4;
   }
 
   body { background: var(--bg); }
@@ -46,8 +46,8 @@ const css = `
   }
   .deo-header-icon {
     width: 36px; height: 36px;
-    background: #1e293b;
-    color: #ffffff;
+    background: var(--accent);
+    color: var(--bg);
     display: grid; place-items: center;
     font-size: 18px;
     flex-shrink: 0;
@@ -58,7 +58,7 @@ const css = `
     font-size: 22px;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: #1e293b;
+    color: var(--text);
   }
   .deo-title span { color: var(--accent); }
   .deo-badge {
@@ -158,7 +158,7 @@ const css = `
     font-weight: 700;
     letter-spacing: -0.02em;
     text-transform: uppercase;
-    color: #1e293b;
+    color: var(--text);
   }
   .deo-section-line {
     flex: 1;
@@ -217,9 +217,9 @@ const css = `
     color: var(--label);
   }
   .deo-input {
-    background: #f8fafc;
+    background: var(--bg);
     border: 1px solid var(--border);
-    color: #1e293b;
+    color: var(--text);
     font-family: 'DM Sans', sans-serif;
     font-size: 15px;
     font-weight: 400;
@@ -261,8 +261,8 @@ const css = `
   .deo-submit-btn {
     all: unset;
     cursor: pointer;
-    background: #1e293b;
-    color: #ffffff;
+    background: var(--accent);
+    color: var(--bg);
     font-family: 'DM Sans', sans-serif;
     font-weight: 800;
     font-size: 13px;
@@ -274,7 +274,7 @@ const css = `
     gap: 10px;
     transition: background 0.15s, transform 0.1s;
   }
-  .deo-submit-btn:hover { background: #334155; }
+  .deo-submit-btn:hover { background: #f5d45a; }
   .deo-submit-btn:active { transform: scale(0.98); }
   .deo-submit-hint {
     font-size: 11px;

@@ -35,7 +35,7 @@ const Badge = ({ value, low, high, labels = ["Low", "Moderate", "High"], reverse
 const MetricCard = ({ label, value, unit, accent, children }) => (
   <div
     style={{
-      background: "#FFFFFF", border: "1px solid #DFE5EB", borderRadius: 6,
+      background: "#171c20", border: "1px solid #30383d", borderRadius: 6,
       padding: "16px 18px", position: "relative", overflow: "hidden",
       transition: "box-shadow 0.2s, transform 0.15s",
     }}
@@ -53,20 +53,20 @@ const MetricCard = ({ label, value, unit, accent, children }) => (
       background: accent, borderRadius: "12px 0 0 12px",
     }} />
     <p style={{
-      fontSize: 11, color: "#64748B", marginBottom: 6,
+      fontSize: 11, color: "#899398", marginBottom: 6,
       fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.07em",
     }}>
       {label}
     </p>
     <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
-      <span style={{ fontSize: 26, fontWeight: 700, color: "#0F172A", lineHeight: 1 }}>
+      <span style={{ fontSize: 26, fontWeight: 700, color: "#f4f1e8", lineHeight: 1 }}>
         {value === null || value === undefined
           ? "—"
           : typeof value === "number"
           ? value.toLocaleString()
           : value}
       </span>
-      {unit && <span style={{ fontSize: 12, color: "#94A3B8" }}>{unit}</span>}
+      {unit && <span style={{ fontSize: 12, color: "#718087" }}>{unit}</span>}
     </div>
     {children}
   </div>
@@ -74,16 +74,16 @@ const MetricCard = ({ label, value, unit, accent, children }) => (
 
 const ShiftRow = ({ label, ashift, bshift, cshift }) => (
   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-    <span style={{ fontSize: 12, color: "#64748B", width: 110, flexShrink: 0 }}>{label}</span>
+    <span style={{ fontSize: 12, color: "#899398", width: 110, flexShrink: 0 }}>{label}</span>
     {[["A", ashift], ["B", bshift], ["C", cshift]].map(([s, v]) => (
       <div key={s} style={{
-        flex: 1, background: "#F8FAFC", border: "1px solid #DFE5EB",
+        flex: 1, background: "#1d2429", border: "1px solid #30383d",
         borderRadius: 6, padding: "6px 10px", textAlign: "center",
       }}>
-        <div style={{ fontSize: 10, color: "#94A3B8", fontWeight: 600, marginBottom: 2 }}>
+        <div style={{ fontSize: 10, color: "#718087", fontWeight: 600, marginBottom: 2 }}>
           Shift {s}
         </div>
-        <div style={{ fontSize: 16, fontWeight: 700, color: "#0F172A" }}>
+        <div style={{ fontSize: 16, fontWeight: 700, color: "#f4f1e8" }}>
           {v ?? "—"}
         </div>
       </div>
@@ -107,16 +107,16 @@ const SectionTitle = ({ label, color, icon }) => (
 );
 
 const Divider = () => (
-  <div style={{ borderTop: "1px solid #F1F5F9", margin: "22px 0" }} />
+  <div style={{ borderTop: "1px solid #273136", margin: "22px 0" }} />
 );
 
 const EmptyState = ({ label }) => (
   <div style={{
     textAlign: "center", padding: "28px 20px",
-    background: "#F8FAFC", borderRadius: 6, border: "1px dashed #CBD5E1",
+    background: "#1d2429", borderRadius: 6, border: "1px dashed #4b585e",
   }}>
     <div style={{ fontSize: 26, marginBottom: 8 }}>📭</div>
-    <p style={{ fontSize: 13, color: "#94A3B8", fontWeight: 500 }}>
+    <p style={{ fontSize: 13, color: "#899398", fontWeight: 500 }}>
       No {label} data for this period
     </p>
   </div>
@@ -129,7 +129,7 @@ const Skeleton = () => (
       {Array.from({ length: 6 }).map((_, i) => (
         <div key={i} style={{
           height: 90, borderRadius: 6,
-          background: "linear-gradient(90deg,#F1F5F9 25%,#E2E8F0 50%,#F1F5F9 75%)",
+          background: "linear-gradient(90deg,#1d2429 25%,#30383d 50%,#1d2429 75%)",
           backgroundSize: "200% 100%",
           animation: `shimmer 1.4s ${i * 0.1}s infinite`,
         }} />
@@ -234,8 +234,8 @@ const Dashboard = () => {
               {q.topIssues.map((issue, idx) => (
                 <div key={idx} style={{
                   display: "flex", alignItems: "center", justifyContent: "space-between",
-                  background: "#F8FAFC", borderRadius: 8,
-                  padding: "10px 14px", border: "1px solid #DFE5EB",
+                  background: "#1d2429", borderRadius: 8,
+                  padding: "10px 14px", border: "1px solid #30383d",
                 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <div style={{
@@ -279,8 +279,8 @@ const Dashboard = () => {
 
         {(d.paintshopin?.length > 0 || d.paintshopout?.length > 0) && (
           <div style={{
-            background: "#F8FAFC", borderRadius: 6,
-            padding: "16px 18px", border: "1px solid #DFE5EB",
+            background: "#1d2429", borderRadius: 6,
+            padding: "16px 18px", border: "1px solid #30383d",
           }}>
             <p style={{
               fontSize: 11, fontWeight: 700, color: "#94A3B8",
@@ -320,7 +320,7 @@ const Dashboard = () => {
   // ── render ────────────────────────────────────────────────────────────────
   return (
     <div style={{
-      minHeight: "100vh", background: "#F4F6F8",
+      minHeight: "100vh", background: "#101316",
       fontFamily: "'DM Sans', sans-serif", padding: "24px 16px",
     }}>
       <link
@@ -342,31 +342,31 @@ const Dashboard = () => {
             }}>
               Operations
             </p>
-            <h1 style={{ fontSize: 24, fontWeight: 700, color: "#0F172A", letterSpacing: "0", margin: 0 }}>
+            <h1 style={{ fontSize: 24, fontWeight: 700, color: "#f4f1e8", letterSpacing: "0", margin: 0 }}>
               SQDC Dashboard
             </h1>
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
             <div style={{
-              display: "flex", gap: 4, background: "#FFFFFF",
-              border: "1px solid #DFE5EB", borderRadius: 6, padding: 4,
+              display: "flex", gap: 4, background: "#171c20",
+              border: "1px solid #30383d", borderRadius: 6, padding: 4,
             }}>
               {["daily", "weekly", "monthly"].map(f => (
                 <button key={f} onClick={() => setFilter(f)} style={{
                   padding: "6px 18px", borderRadius: 7, border: "none",
                   fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
                   transition: "all 0.15s", textTransform: "capitalize",
-                  background: filter === f ? "#0F172A" : "transparent",
-                  color:      filter === f ? "#FFFFFF"  : "#64748B",
+                  background: filter === f ? "#e8c547" : "transparent",
+                  color:      filter === f ? "#101316"  : "#899398",
                 }}>
                   {f}
                 </button>
               ))}
             </div>
             <button onClick={handleLogout} style={{
-              padding: "8px 14px", borderRadius: 8, border: "1px solid #CBD5E1",
-              background: "#FFFFFF", color: "#475569", fontSize: 13,
+              padding: "8px 14px", borderRadius: 8, border: "1px solid #4b585e",
+              background: "#171c20", color: "#b6c0c4", fontSize: 13,
               fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
             }}>
               Sign out
@@ -376,7 +376,7 @@ const Dashboard = () => {
 
         {/* ── DEPARTMENT SELECTOR ── */}
         <div style={{
-          background: "#FFFFFF", border: "1px solid #DFE5EB",
+          background: "#171c20", border: "1px solid #30383d",
           borderRadius: 6, padding: "18px 20px", marginBottom: 18,
         }}>
           <p style={{
@@ -391,14 +391,14 @@ const Dashboard = () => {
             <button onClick={() => setActiveDept(null)} style={{
               display: "flex", alignItems: "center", gap: 7,
               padding: "7px 16px", borderRadius: 99, fontFamily: "inherit",
-              border:      `1.5px solid ${activeDept === null ? "#0F172A" : "#E2E8F0"}`,
-              background:  activeDept === null ? "#0F172A" : "#FFFFFF",
-              color:       activeDept === null ? "#FFFFFF"  : "#64748B",
+              border:      `1.5px solid ${activeDept === null ? "#e8c547" : "#3b464c"}`,
+              background:  activeDept === null ? "#e8c547" : "#171c20",
+              color:       activeDept === null ? "#101316"  : "#899398",
               fontSize: 13, fontWeight: 600, cursor: "pointer", transition: "all 0.15s",
             }}>
               <span style={{
                 width: 8, height: 8, borderRadius: "50%",
-                background: activeDept === null ? "#FFFFFF" : "#94A3B8",
+                background: activeDept === null ? "#101316" : "#718087",
               }} />
               All departments
             </button>
@@ -411,13 +411,13 @@ const Dashboard = () => {
                   key={dept._id}
                   onClick={() => setActiveDept(isActive ? null : dept._id)}
                   onMouseEnter={e => { if (!isActive) e.currentTarget.style.borderColor = c.border; }}
-                  onMouseLeave={e => { if (!isActive) e.currentTarget.style.borderColor = "#E2E8F0"; }}
+                  onMouseLeave={e => { if (!isActive) e.currentTarget.style.borderColor = "#3b464c"; }}
                   style={{
                     display: "flex", alignItems: "center", gap: 7,
                     padding: "7px 16px", borderRadius: 99, fontFamily: "inherit",
-                    border:     `1.5px solid ${isActive ? c.border : "#E2E8F0"}`,
-                    background: isActive ? c.bg     : "#FFFFFF",
-                    color:      isActive ? c.text   : "#475569",
+                    border:     `1.5px solid ${isActive ? c.border : "#3b464c"}`,
+                    background: isActive ? c.bg     : "#171c20",
+                    color:      isActive ? c.text   : "#b6c0c4",
                     fontSize: 13, fontWeight: 600, cursor: "pointer", transition: "all 0.15s",
                   }}
                 >
@@ -481,7 +481,7 @@ const Dashboard = () => {
 
         {/* ── MAIN METRICS PANEL ── */}
         <div style={{
-          background: "#FFFFFF", border: "1px solid #DFE5EB",
+          background: "#171c20", border: "1px solid #30383d",
           borderRadius: 6, padding: "26px 22px",
         }}>
           {loading ? (
@@ -507,7 +507,7 @@ const Dashboard = () => {
         </div>
 
         {/* ── FOOTER ── */}
-        <p style={{ textAlign: "center", fontSize: 12, color: "#CBD5E1", marginTop: 24 }}>
+        <p style={{ textAlign: "center", fontSize: 12, color: "#4b585e", marginTop: 24 }}>
           Last refreshed · {new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
           {" · "}
           <span
