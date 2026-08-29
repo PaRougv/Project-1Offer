@@ -9,7 +9,9 @@ import {
     getHODs,
     getAdmins,
     deactivateHOD,
+    reactivateHOD,
     deactivateAdmin,
+    reactivateAdmin,
     update,
     updateUser,
     deleteUser
@@ -26,7 +28,9 @@ router.get('/hods' , requireAuth, requirePlantHead, getHODs)
 router.post('/admins' , requireAuth, requireHOD, createAdmin)
 router.get('/admins' , requireAuth, requireHOD, getAdmins)
 router.post('/deactivate/hod/:id', requireAuth, requirePlantHead, deactivateHOD);
+router.post('/activate/hod/:id', requireAuth, requirePlantHead, reactivateHOD);
 router.post('/deactivate/admin/:id', requireAuth, requireHOD, deactivateAdmin);
+router.post('/activate/admin/:id', requireAuth, requireHOD, reactivateAdmin);
 router.put('/update' , requireAuth, update)
 router.put('/users/:id' , requireAuth, requireHOD, updateUser)
 router.delete('/users/:id' , requireAuth, requireHOD, deleteUser)

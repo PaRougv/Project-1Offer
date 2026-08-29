@@ -21,4 +21,7 @@
 .management-action { border: 1px solid #8e5a5a; color: #ff9d9d; background: transparent; cursor: pointer; padding: 7px 10px; font-size: 11px; text-transform: uppercase; }
 .management-action:disabled { border-color: #3b464c; color: #718087; cursor: default; }
 .management-message { max-width: 1080px; margin: 0 auto 18px; }
-@media (max-width: 700px) { .management-root { padding: 24px; } .management-grid { grid-template-columns: 1fr; } .management-header h1 { font-size: 28px; } .management-row { display: block; } .management-row span { display: block; margin-top: 4px; } }
+.management-pagination { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 18px; padding-top: 18px; border-top: 1px solid #30383d; color: #f4f1e8; font: 13px 'Barlow', sans-serif; }
+.management-pagination button { border: 1px solid #3b464c; background: #101316; color: #f4f1e8; padding: 8px 12px; cursor: pointer; }
+.management-pagination button:disabled { opacity: 0.45; cursor: not-allowed; }
+@media (max-width: 700px) { .management-root { padding: 24px; } .management-grid { grid-template-columns: 1fr; } .management-header h1 { font-size: 28px; } .management-row { display: block; } .management-row span { display: block; margin-top: 4px; } .management-pagination { flex-direction: column; align-items: flex-start; } }

@@ -198,33 +198,78 @@ export const createHOD = (req, res) => createManagedUser(req, res, "HOD");
 export const createAdmin = (req, res) => createManagedUser(req, res, "ADMIN");
 
 export const getHODs = async (req, res) => {
-    const hods = await User.find({ role: "HOD" }).select("_id name email role department isActive").populate("department", "name");
-    res.status(200).json({ success: true, hods });
+    const page = Math.max(1, Number(req.query.page) || 1);
+    const limit = Math.min(Math.max(1, Number(req.query.limit) || 10), 50);
+    const skip = (page - 1) * limit;
+
+    const [hods, total] = await Promise.all([
+        User.find({ role: "HOD" })
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
+            .select("_id name email role department isActive")
+            .populate("department", "name"),
+        User.countDocuments({ role: "HOD" })
+    ]);
+
+    res.status(200).json({
+        success: true,
+        hods,
+        page,
+        limit,
+        total,
+        totalPages: Math.max(1, Math.ceil(total / limit))
+    });
 };
 
 export const getAdmins = async (req, res) => {
-    const admins = await User.find({ role: "ADMIN", department: req.user.department })
-        .select("_id name email role department isActive").populate("department", "name");
-    res.status(200).json({ success: true, admins });
+    const page = Math.max(1, Number(req.query.page) || 1);
+    const limit = Math.min(Math.max(1, Number(req.query.limit) || 10), 50);
+    const skip = (page - 1) * limit;
+
+    const [admins, total] = await Promise.all([
+        User.find({ role: "ADMIN", department: req.user.department })
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
+            .select("_id name email role department isActive")
+            .populate("department", "name"),
+        User.countDocuments({ role: "ADMIN", department: req.user.department })
+    ]);
+
+    res.status(200).json({
+        success: true,
+        admins,
+        page,
+        limit,
+        total,
+        totalPages: Math.max(1, Math.ceil(total / limit))
+    });
 };
 
-    const deactivateManagedUser = async (req, res, targetRole, requireSameDepartment) => {
-        try {
-            const query = { _id: req.params.id, role: targetRole };
-            if (requireSameDepartment) query.department = req.user.department;
+const updateManagedUserStatus = async (req, res, targetRole, requireSameDepartment, isActive) => {
+    try {
+        const query = { _id: req.params.id, role: targetRole };
+        if (requireSameDepartment) query.department = req.user.department;
 
-            const user = await User.findOneAndUpdate(query, { isActive: false }, { new: true })
-                .select("_id name email role department isActive");
-            if (!user) return res.status(404).json({ message: `${targetRole} not found in your scope` });
+        const user = await User.findOneAndUpdate(query, { isActive }, { new: true })
+            .select("_id name email role department isActive");
+        if (!user) return res.status(404).json({ message: `${targetRole} not found in your scope` });
 
-            return res.status(200).json({ success: true, message: "User deactivated", user });
-        } catch (error) {
-            return res.status(500).json({ message: "Server Error", error: error.message });
-        }
-    };
+        return res.status(200).json({
+            success: true,
+            message: isActive ? "User reactivated" : "User deactivated",
+            user
+        });
+    } catch (error) {
+        return res.status(500).json({ message: "Server Error", error: error.message });
+    }
+};
 
-    export const deactivateHOD = (req, res) => deactivateManagedUser(req, res, "HOD", false);
-    export const deactivateAdmin = (req, res) => deactivateManagedUser(req, res, "ADMIN", true);
+export const deactivateHOD = (req, res) => updateManagedUserStatus(req, res, "HOD", false, false);
+export const reactivateHOD = (req, res) => updateManagedUserStatus(req, res, "HOD", false, true);
+export const deactivateAdmin = (req, res) => updateManagedUserStatus(req, res, "ADMIN", true, false);
+export const reactivateAdmin = (req, res) => updateManagedUserStatus(req, res, "ADMIN", true, true);
 
 export const update = async (req, res) => {
     try {
