@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 import API_URL from "../config/api.js";
 
 // ── Department colour themes ───────────────────────────────────────────────────
@@ -111,6 +112,23 @@ const Divider = () => (
   <div style={{ borderTop: "1px solid #273136", margin: "22px 0" }} />
 );
 
+const HistoryChart = ({ data, color }) => (
+  <div style={{ height: 200, marginTop: 16, background: "#101316", border: "1px solid #30383d", borderRadius: 8, padding: "8px 8px 0" }}>
+    <ResponsiveContainer width="100%" height="100%">
+      <BarChart data={data || []}>
+        <CartesianGrid stroke="#2b3439" vertical={false} strokeDasharray="3 3" />
+        <XAxis dataKey="label" stroke="#899398" tick={{ fontSize: 10 }} interval={0} angle={-35} textAnchor="end" height={56} />
+        <YAxis stroke="#899398" tick={{ fontSize: 10 }} />
+        <Tooltip
+          cursor={{ fill: "rgba(232, 197, 71, 0.08)" }}
+          contentStyle={{ background: "#171c20", border: "1px solid #3b464c", borderRadius: 8, color: "#f4f1e8" }}
+        />
+        <Bar dataKey="value" fill={color} radius={[4, 4, 0, 0]} />
+      </BarChart>
+    </ResponsiveContainer>
+  </div>
+);
+
 const EmptyState = ({ label }) => (
   <div style={{
     textAlign: "center", padding: "28px 20px",
@@ -192,17 +210,19 @@ const Dashboard = () => {
     const items = data?.safety;
     if (!items?.length) return <EmptyState label="safety" />;
     return items.map((s, i) => (
-      <div key={s._id || i}
-        style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(150px,1fr))", gap: 12 }}>
-        <MetricCard label="Near misses" value={s.nearmiss} accent="#EF4444">
-          <Badge value={s.nearmiss} low={3} high={8} />
-        </MetricCard>
-        <MetricCard label="Incidents" value={s.incidents} accent="#EF4444">
-          <Badge value={s.incidents} low={0} high={2} />
-        </MetricCard>
-        <MetricCard label="FAC" value={s.fac} accent="#EF4444">
-          <Badge value={s.fac} low={5} high={15} />
-        </MetricCard>
+      <div key={s._id || i}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(150px,1fr))", gap: 12 }}>
+          <MetricCard label="Near misses" value={s.nearmiss} accent="#EF4444">
+            <Badge value={s.nearmiss} low={3} high={8} />
+          </MetricCard>
+          <MetricCard label="Incidents" value={s.incidents} accent="#EF4444">
+            <Badge value={s.incidents} low={0} high={2} />
+          </MetricCard>
+          <MetricCard label="FAC" value={s.fac} accent="#EF4444">
+            <Badge value={s.fac} low={5} high={15} />
+          </MetricCard>
+        </div>
+        {filter === "monthly" && <HistoryChart data={data?.chart?.safety || []} color="#EF4444" />}
       </div>
     ));
   };
@@ -223,6 +243,8 @@ const Dashboard = () => {
             <Badge value={q.punch} low={10} high={30} />
           </MetricCard>
         </div>
+
+        {filter === "monthly" && <HistoryChart data={data?.chart?.quality || []} color="#3B82F6" />}
 
         {q.topIssues?.length > 0 && (
           <>
@@ -279,6 +301,8 @@ const Dashboard = () => {
           <MetricCard label="TCF production"  value={d.tcfproduction}  unit="units" accent="#10B981" />
         </div>
 
+        {filter === "monthly" && <HistoryChart data={data?.chart?.delivery || []} color="#10B981" />}
+
         {(d.ashiftin !== undefined || d.ashiftout !== undefined) && (
           <div style={{
             background: "#1d2429", borderRadius: 6,
@@ -304,13 +328,15 @@ const Dashboard = () => {
     const items = data?.cost;
     if (!items?.length) return <EmptyState label="cost" />;
     return items.map((c, i) => (
-      <div key={c._id || i}
-        style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(150px,1fr))", gap: 12 }}>
-        <MetricCard label="Power"   value={c.powerConsumption}   unit="kWh" accent="#F59E0B" />
-        <MetricCard label="Gas"     value={c.gasConsumption}     unit="m³"  accent="#F59E0B" />
-        <MetricCard label="IDM"     value={c.idmConsumption}     unit="L"   accent="#F59E0B" />
-        <MetricCard label="Thinner" value={c.thinnerConsumption} unit="L"   accent="#F59E0B" />
-        <MetricCard label="OT nos"  value={c.otNos}                         accent="#F59E0B" />
+      <div key={c._id || i}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(150px,1fr))", gap: 12 }}>
+          <MetricCard label="Power"   value={c.powerConsumption}   unit="kWh" accent="#F59E0B" />
+          <MetricCard label="Gas"     value={c.gasConsumption}     unit="m³"  accent="#F59E0B" />
+          <MetricCard label="IDM"     value={c.idmConsumption}     unit="L"   accent="#F59E0B" />
+          <MetricCard label="Thinner" value={c.thinnerConsumption} unit="L"   accent="#F59E0B" />
+          <MetricCard label="OT nos"  value={c.otNos}                         accent="#F59E0B" />
+        </div>
+        {filter === "monthly" && <HistoryChart data={data?.chart?.cost || []} color="#F59E0B" />}
       </div>
     ));
   };

@@ -123,6 +123,50 @@ const aggregateCost = (records) => {
   return [{ ...total, _id: "summary" }];
 };
 
+const buildHistorySeries = (records, currentDate, valueSelector) => {
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth();
+  const series = [];
+
+  for (let monthIndex = 0; monthIndex < currentMonth; monthIndex += 1) {
+    const monthTotal = records.reduce((sum, record) => {
+      const createdAt = new Date(record.createdAt);
+      if (createdAt.getFullYear() === currentYear && createdAt.getMonth() === monthIndex) {
+        return sum + Number(valueSelector(record) || 0);
+      }
+      return sum;
+    }, 0);
+
+    series.push({
+      label: new Date(currentYear, monthIndex, 1).toLocaleString("en-US", { month: "short" }),
+      value: monthTotal,
+    });
+  }
+
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+  for (let day = 1; day <= daysInMonth; day += 1) {
+    const dayTotal = records.reduce((sum, record) => {
+      const createdAt = new Date(record.createdAt);
+      if (
+        createdAt.getFullYear() === currentYear &&
+        createdAt.getMonth() === currentMonth &&
+        createdAt.getDate() === day
+      ) {
+        return sum + Number(valueSelector(record) || 0);
+      }
+      return sum;
+    }, 0);
+
+    series.push({
+      label: `${day}`,
+      value: dayTotal,
+    });
+  }
+
+  return series;
+};
+
 
 
 // Main Dashboard Controller
@@ -161,15 +205,29 @@ export const getDashboardData = async (req, res) => {
       createdAt: { $gte: startDate }
     });
 
+    const yearStart = new Date(new Date().getFullYear(), 0, 1);
+    const historicalSafety = await Safety.find({ ...departmentFilter, createdAt: { $gte: yearStart } });
+    const historicalQuality = await Quality.find({ ...departmentFilter, createdAt: { $gte: yearStart } });
+    const historicalDelivery = await Delivery.find({ ...departmentFilter, createdAt: { $gte: yearStart } });
+    const historicalCost = await Cost.find({ ...departmentFilter, createdAt: { $gte: yearStart } });
+
     const department = req.user.role === "PLANT_HEAD"
       ? await Department.find({ createdAt: { $gte: startDate } })
       : await Department.find({ _id: req.user.department });
+
+    const now = new Date();
 
     res.status(200).json({
       safety: aggregateSafety(safetyRecords),
       quality: aggregateQuality(qualityRecords),
       delivery: aggregateDelivery(deliveryRecords),
       cost: aggregateCost(costRecords),
+      chart: {
+        safety: buildHistorySeries(historicalSafety, now, (record) => record.nearmiss),
+        quality: buildHistorySeries(historicalQuality, now, (record) => record.punch),
+        delivery: buildHistorySeries(historicalDelivery, now, (record) => record.topcoatcycles),
+        cost: buildHistorySeries(historicalCost, now, (record) => record.powerConsumption),
+      },
       department,
       viewerRole: req.user.role
     });
